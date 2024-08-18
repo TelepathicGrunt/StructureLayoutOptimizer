@@ -1,0 +1,196 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'net.neoforged.moddev' version '1.0.14'
+    id "me.modmuss50.mod-publish-plugin" version "0.5.1"
+}
+
+apply plugin: "me.modmuss50.mod-publish-plugin"
+
+tasks.named('wrapper', Wrapper).configure {
+    distributionType = Wrapper.DistributionType.BIN
+}
+
+version = mod_version
+group = mod_group_id
+
+repositories {
+    mavenLocal()
+}
+
+base {
+    archivesName = mod_id
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+neoForge {
+    version = project.neo_version
+
+    parchment {
+        mappingsVersion = project.parchment_mappings_version
+        minecraftVersion = project.parchment_minecraft_version
+    }
+
+    // This line is optional. Access Transformers are automatically detected
+    // accessTransformers = project.files('src/main/resources/META-INF/accesstransformer.cfg')
+
+    runs {
+        client {
+            client()
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        server {
+            server()
+            programArgument '--nogui'
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+
+        configureEach {
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+    }
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
+}
+
+dependencies {
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+// IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
+
+////////////////////////////////////////////RELEASING/////////////////////////////////////////////
+version = "${rootProject.mod_version}+${rootProject.minecraft_version}"
+var ENV = System.getenv()
+def uploadSettings = [
+        "curse-id": "",
+        "modrinth-id": ""
+]
+def uploadDependencies = []
+
+if (uploadSettings != null && uploadDependencies != null) {
+
+    File changeLog = rootProject.file("CHANGELOG.md")
+    String changelogText = changeLog.exists() ? changeLog.text : ""
+
+    publishMods {
+        file = tasks.jar.archiveFile
+        type = STABLE
+        changelog = changelogText
+
+        displayName = "Cow Tools v${project.mod_version} (${project.minecraft_version})"
+        version = "${project.version}"
+        modLoaders.add("neoforge")
+
+        if (ENV.CURSEFORGEKEY) {
+            curseforge {
+                accessToken = ENV.CURSEFORGEKEY
+                projectId = uploadSettings["curse-id"]
+                minecraftVersions.add(project.minecraft_version)
+
+                if (uploadDependencies.size() > 0) {
+                    uploadDependencies.each { dep, required ->
+                        if (required) {
+                            requires(dep)
+                        }
+                        else {
+                            optional(dep)
+                        }
+                    }
+                }
+            }
+        }
+
+        if (ENV.MODRINTH_TOKEN) {
+            modrinth {
+                accessToken = ENV.MODRINTH_TOKEN
+                projectId = uploadSettings["modrinth-id"]
+                minecraftVersions.add(project.minecraft_version)
+
+                dependencies {
+                    uploadDependencies.each { dep, required ->
+                        if (required) {
+                            requires(dep)
+                        } else {
+                            optional(dep)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact jar
+
+            artifactId = mod_id
+
+            pom {
+                name = 'Structure Layout Optimizer'
+                description = 'An attempt at optimizing jigsaw generation'
+                url = 'https://github.com/TelepathicGrunt/StructureLayoutOptimizer'
+
+                scm {
+                    connection = 'git:https://github.com/TelepathicGrunt/StructureLayoutOptimizer.git'
+                    developerConnection = 'git:https://github.com/TelepathicGrunt/StructureLayoutOptimizer.git'
+                    url = 'https://github.com/TelepathicGrunt/StructureLayoutOptimizer'
+                }
+
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://github.com/TelepathicGrunt/StructureLayoutOptimizer/blob/master/LICENSE.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'telepathic_grunt'
+                        name = 'TelepathicGrunt'
+                        email = 'asarnesespam@gmail.com'
+                    }
+                }
+            }
+
+        }
+    }
+
+    repositories {
+        maven {
+            url = uri("https://nexus.resourcefulbees.com/repository/telepathicgrunt/")
+            credentials {
+                username ENV.MAVEN_USER
+                password ENV.MAVEN_PASS
+            }
+        }
+    }
+}
+
+tasks.register('buildAndRelease') {}
+tasks.publish.mustRunAfter tasks.build
+tasks.publishMods.mustRunAfter tasks.publish
+tasks.buildAndRelease.dependsOn(tasks.build, tasks.publish, tasks.publishMods)

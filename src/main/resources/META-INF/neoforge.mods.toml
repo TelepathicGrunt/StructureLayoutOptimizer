@@ -1,0 +1,33 @@
+modLoader="javafml"
+loaderVersion="[4,)"
+license="MIT"
+issueTrackerURL="https://github.com/TelepathicGrunt/StructureLayoutOptimizer/issues"
+
+[[mods]]
+modId="structure_layout_optimizer"
+version="1.0.0"
+displayName="Structure Layout Optimizer"
+logoFile="structure_layout_optimizer.png"
+logoBlur=false
+authors="TelepathicGrunt"
+description='''An attempt at optimizing jigsaw generation'''
+
+[[mixins]]
+config="structure_layout_optimizer.mixins.json"
+
+#[[accessTransformers]]
+#file="META-INF/accesstransformer.cfg"
+
+[[dependencies.structure_layout_optimizer]]
+    modId="neoforge"
+    type="required"
+    versionRange="[21.0.0-beta,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.structure_layout_optimizer]]
+    modId="minecraft"
+    type="required"
+    versionRange="[1.21,)"
+    ordering="NONE"
+    side="BOTH"
