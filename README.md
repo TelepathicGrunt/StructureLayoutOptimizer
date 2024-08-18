@@ -1,4 +1,4 @@
-Optimizes structure generation as best I can;
+Optimizes general Jigsaw structure generation as best I can:
 
 - Replaces VertexShape unoptimized calls with a BoxOctree to make pieces only check nearby pieces for intersections instead of entire structure.
 
