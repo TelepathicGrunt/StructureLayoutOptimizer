@@ -3,7 +3,8 @@
   "package": "telepathicgrunt.structure_layout_optimizer.mixins",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "JigsawPlacementMixin"
+    "JigsawPlacementMixin",
+    "JigsawPlacementPlacerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
