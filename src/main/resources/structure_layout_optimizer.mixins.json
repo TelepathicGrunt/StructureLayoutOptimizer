@@ -5,6 +5,7 @@
   "mixins": [
     "JigsawPlacementMixin",
     "JigsawPlacementPlacerMixin",
+    "SinglePoolElementMixin",
     "StructureTemplateMixin"
   ],
   "injectors": {

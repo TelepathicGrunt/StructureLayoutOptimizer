@@ -1,9 +1,22 @@
 package telepathicgrunt.structure_layout_optimizer.utils;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntComparators;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.minecraft.Optionull;
+import net.minecraft.Util;
 import net.minecraft.core.FrontAndTop;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NumericTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.JigsawBlock;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
-import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 public final class GeneralUtils {
     private GeneralUtils() {}
@@ -15,16 +28,68 @@ public final class GeneralUtils {
 
         return prop1.front() == prop2.front().getOpposite() &&
                 (prop1.top() == prop2.top() || isRollableJoint(jigsaw1, prop1)) &&
-                jigsaw1.nbt().getString("target").equals(jigsaw2.nbt().getString("name"));
+                getStringMicroOptimised(jigsaw1.nbt(), "target").equals(getStringMicroOptimised(jigsaw2.nbt(), "name"));
     }
 
     private static boolean isRollableJoint(StructureTemplate.StructureBlockInfo jigsaw1, FrontAndTop prop1) {
-        String joint = jigsaw1.nbt().getString("joint");
+        String joint = getStringMicroOptimised(jigsaw1.nbt(), "joint");
         if(!joint.equals("rollable") && !joint.equals("aligned")) {
             return !prop1.front().getAxis().isHorizontal();
         }
         else {
             return joint.equals("rollable");
+        }
+    }
+
+    public static void shuffleAndPrioritize(List<StructureTemplate.StructureBlockInfo> list, RandomSource random) {
+        Int2ObjectArrayMap<List<StructureTemplate.StructureBlockInfo>> buckets = new Int2ObjectArrayMap<>();
+
+        // Add entries to the bucket
+        for (StructureTemplate.StructureBlockInfo structureBlockInfo : list) {
+            int key = 0;
+            if (structureBlockInfo.nbt() != null) {
+                key = getIntMicroOptimised(structureBlockInfo.nbt(), "selection_priority");
+            }
+
+            buckets.computeIfAbsent(key, k -> new ArrayList<>()).add(structureBlockInfo);
+        }
+
+        // Shuffle the entries in the bucket
+        for (List<StructureTemplate.StructureBlockInfo> bucketList : buckets.values()) {
+            Util.shuffle(bucketList, random);
+        }
+
+        if (buckets.size() == 1) {
+            list.clear();
+            copyAll(buckets.get(0), list);
+        }
+        else if (buckets.size() > 1) {
+            // Priorities found. Concat them into a single new master list in reverse order to match vanilla behavior
+            list.clear();
+
+            IntArrayList keys = new IntArrayList(buckets.keySet());
+            keys.sort(IntComparators.OPPOSITE_COMPARATOR);
+
+            for (int i = 0; i < keys.size(); i++) {
+                copyAll(buckets.get(keys.getInt(i)), list);
+            }
+        }
+    }
+
+    // From Thailkil by reducing grabbing of the entry by half
+    public static int getIntMicroOptimised(CompoundTag tag, String key) {
+        return tag.get(key) instanceof NumericTag numericTag ? numericTag.getAsInt() : 0;
+    }
+
+    public static String getStringMicroOptimised(CompoundTag tag, String key) {
+        return tag.get(key) instanceof StringTag stringTag ? stringTag.getAsString() : "";
+    }
+
+    // From XFactHD at https://github.com/XFactHD/FramedBlocks/blob/1.21/src/main/java/xfacthd/framedblocks/api/util/Utils.java#L372-L385
+    public static <T> void copyAll(List<T> src, List<T> dest) {
+        // Do not listen to IDE. This is faster than addAll
+        for (int i = 0; i < src.size(); i++) {
+            dest.add(src.get(i));
         }
     }
 }
