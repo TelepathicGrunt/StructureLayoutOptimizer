@@ -13,9 +13,9 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import telepathicgrunt.structure_layout_optimizer.BoxOctree;
-import telepathicgrunt.structure_layout_optimizer.GeneralUtils;
-import telepathicgrunt.structure_layout_optimizer.TrojanVoxelShape;
+import telepathicgrunt.structure_layout_optimizer.utils.BoxOctree;
+import telepathicgrunt.structure_layout_optimizer.utils.GeneralUtils;
+import telepathicgrunt.structure_layout_optimizer.utils.TrojanVoxelShape;
 
 @Mixin(targets = "net.minecraft.world.level.levelgen.structure.pools.JigsawPlacement$Placer")
 public class JigsawPlacementPlacerMixin {

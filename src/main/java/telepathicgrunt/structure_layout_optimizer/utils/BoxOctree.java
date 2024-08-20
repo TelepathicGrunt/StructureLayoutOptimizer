@@ -1,4 +1,4 @@
-package telepathicgrunt.structure_layout_optimizer;
+package telepathicgrunt.structure_layout_optimizer.utils;
 
 
 import net.minecraft.core.Vec3i;

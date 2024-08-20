@@ -4,7 +4,8 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "JigsawPlacementMixin",
-    "JigsawPlacementPlacerMixin"
+    "JigsawPlacementPlacerMixin",
+    "StructureTemplateMixin"
   ],
   "injectors": {
     "defaultRequire": 1

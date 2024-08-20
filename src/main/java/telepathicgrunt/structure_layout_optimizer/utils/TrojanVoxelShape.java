@@ -1,4 +1,4 @@
-package telepathicgrunt.structure_layout_optimizer;
+package telepathicgrunt.structure_layout_optimizer.utils;
 
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import net.minecraft.core.Direction;

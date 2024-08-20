@@ -8,8 +8,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import telepathicgrunt.structure_layout_optimizer.BoxOctree;
-import telepathicgrunt.structure_layout_optimizer.TrojanVoxelShape;
+import telepathicgrunt.structure_layout_optimizer.utils.BoxOctree;
+import telepathicgrunt.structure_layout_optimizer.utils.TrojanVoxelShape;
 
 @Mixin(value = JigsawPlacement.class)
 public class JigsawPlacementMixin {
