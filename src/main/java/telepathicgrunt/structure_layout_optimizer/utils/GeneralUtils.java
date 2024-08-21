@@ -3,8 +3,6 @@ package telepathicgrunt.structure_layout_optimizer.utils;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntComparators;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.Optionull;
 import net.minecraft.Util;
 import net.minecraft.core.FrontAndTop;
 import net.minecraft.nbt.CompoundTag;
@@ -15,7 +13,6 @@ import net.minecraft.world.level.block.JigsawBlock;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public final class GeneralUtils {

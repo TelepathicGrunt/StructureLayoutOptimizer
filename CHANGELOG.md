@@ -1,1 +1,1 @@
-initial release
+Fixed a big dumb dumb I did where I forgot to add the structure's starting piece into the BoxOctree which caused weird intersecting pieces with the starting piece and different layouts for structures. Now layout should be back to normal.

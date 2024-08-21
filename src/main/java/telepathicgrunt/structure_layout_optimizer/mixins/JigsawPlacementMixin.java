@@ -1,6 +1,7 @@
 package telepathicgrunt.structure_layout_optimizer.mixins;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.pools.JigsawPlacement;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.BooleanOp;
@@ -20,8 +21,10 @@ public class JigsawPlacementMixin {
             },
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/shapes/Shapes;join(Lnet/minecraft/world/phys/shapes/VoxelShape;Lnet/minecraft/world/phys/shapes/VoxelShape;Lnet/minecraft/world/phys/shapes/BooleanOp;)Lnet/minecraft/world/phys/shapes/VoxelShape;"),
             remap = false)
-    private static VoxelShape structureLayoutOptimizer$replaceVoxelShape1(VoxelShape shape1, VoxelShape shape2, BooleanOp function, @Local(ordinal = 0) AABB aabb) {
-        return new TrojanVoxelShape(new BoxOctree(aabb));
+    private static VoxelShape structureLayoutOptimizer$replaceVoxelShape1(VoxelShape shape1, VoxelShape shape2, BooleanOp function, @Local(ordinal = 0) AABB aabb, @Local(ordinal = 0, argsOnly = true) BoundingBox boundingbox) {
+        TrojanVoxelShape trojanVoxelShape = new TrojanVoxelShape(new BoxOctree(aabb));
+        trojanVoxelShape.boxOctree.addBox(AABB.of(boundingbox));
+        return trojanVoxelShape;
     }
 }
 

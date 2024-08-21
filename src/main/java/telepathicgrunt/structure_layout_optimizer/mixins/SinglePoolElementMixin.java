@@ -6,9 +6,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import telepathicgrunt.structure_layout_optimizer.utils.BoxOctree;
 import telepathicgrunt.structure_layout_optimizer.utils.GeneralUtils;
-import telepathicgrunt.structure_layout_optimizer.utils.TrojanVoxelShape;
 
 import java.util.List;
 

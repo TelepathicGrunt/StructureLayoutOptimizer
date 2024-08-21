@@ -31,8 +31,9 @@ public class JigsawPlacementPlacerMixin {
     private boolean structureLayoutOptimizer$replaceVoxelShape2(VoxelShape parentBounds, VoxelShape pieceShape, BooleanOp booleanOp, Operation<Boolean> original, @Local(ordinal = 3) BoundingBox pieceBounds) {
         if (parentBounds instanceof TrojanVoxelShape trojanVoxelShape) {
             AABB pieceAABB = AABB.of(pieceBounds).deflate(0.25D);
+
             // Have to inverse because of an ! outside our wrap
-            return !(trojanVoxelShape.boxOctree.boundaryContains(pieceAABB) && !trojanVoxelShape.boxOctree.intersectsAnyBox(pieceAABB));
+            return !trojanVoxelShape.boxOctree.withinBoundsButNotIntersectingChildren(pieceAABB);
         }
 
         return original.call(parentBounds, pieceShape, booleanOp);
