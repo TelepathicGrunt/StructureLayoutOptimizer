@@ -81,22 +81,22 @@ idea {
 }
 
 ////////////////////////////////////////////RELEASING/////////////////////////////////////////////
-version = "${rootProject.mod_version}+${rootProject.minecraft_version}"
+version = "${project.mod_version}+${project.minecraft_version}"
 var ENV = System.getenv()
 def uploadSettings = [
-        "curse-id": "",
-        "modrinth-id": ""
+        "curse-id": "1087831",
+        "modrinth-id": "ayPU0OHc"
 ]
 def uploadDependencies = []
 
 if (uploadSettings != null && uploadDependencies != null) {
 
-    File changeLog = rootProject.file("CHANGELOG.md")
+    File changeLog = project.file("CHANGELOG.md")
     String changelogText = changeLog.exists() ? changeLog.text : ""
 
     publishMods {
         file = tasks.jar.archiveFile
-        type = STABLE
+        type = BETA
         changelog = changelogText
 
         displayName = "Cow Tools v${project.mod_version} (${project.minecraft_version})"
