@@ -99,7 +99,7 @@ if (uploadSettings != null && uploadDependencies != null) {
         type = BETA
         changelog = changelogText
 
-        displayName = "Cow Tools v${project.mod_version} (${project.minecraft_version})"
+        displayName = "Structure Layout Optimizer v${project.mod_version} (${project.minecraft_version})"
         version = "${project.version}"
         modLoaders.add("neoforge")
 
