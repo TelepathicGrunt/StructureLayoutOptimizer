@@ -1,1 +1,1 @@
-Fixed a big dumb dumb I did where I forgot to add the structure's starting piece into the BoxOctree which caused weird intersecting pieces with the starting piece and different layouts for structures. Now layout should be back to normal.
+Added optimization for high weight template pools. Also comes with a `deduplicateShuffledTemplatePoolElementList` option you can set to true for a bit more performance at the cost of losing vanilla seed parity with structure layouts.

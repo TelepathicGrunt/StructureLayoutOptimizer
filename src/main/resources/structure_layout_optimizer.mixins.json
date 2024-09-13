@@ -6,7 +6,8 @@
     "JigsawPlacementMixin",
     "JigsawPlacementPlacerMixin",
     "SinglePoolElementMixin",
-    "StructureTemplateMixin"
+    "StructureTemplateMixin",
+    "StructureTemplatePoolAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
