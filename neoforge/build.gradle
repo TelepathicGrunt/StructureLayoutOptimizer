@@ -7,7 +7,9 @@ configurations {
 }
 
 dependencies {
-    compileOnly project(':common')
+    compileOnly(project(':common')) {
+        transitive = false
+    }
 
     implementation "com.teamresourceful.resourcefulconfig:resourcefulconfig-neoforge-${project.resourceful_config_minecraft_version}:${project.resourceful_config_version}"
 }
