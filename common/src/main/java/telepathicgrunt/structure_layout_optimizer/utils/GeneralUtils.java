@@ -1,27 +1,16 @@
 package telepathicgrunt.structure_layout_optimizer.utils;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntComparators;
-import net.minecraft.Util;
 import net.minecraft.core.FrontAndTop;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.JigsawBlock;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.ServiceLoader;
 
 public final class GeneralUtils {
     private GeneralUtils() {}
-
-    public static <T> T loadService(Class<T> service) {
-        return ServiceLoader.load(service).findFirst().orElseThrow(() -> new IllegalStateException("No platform implementation found for " + service.getName()));
-    }
 
     // More optimized with checking if the jigsaw blocks can connect
     public static boolean canJigsawsAttach(StructureTemplate.StructureBlockInfo jigsaw1, StructureTemplate.StructureBlockInfo jigsaw2) {
@@ -40,41 +29,6 @@ public final class GeneralUtils {
         }
         else {
             return joint.equals("rollable");
-        }
-    }
-
-    public static void shuffleAndPrioritize(List<StructureTemplate.StructureBlockInfo> list, RandomSource random) {
-        Int2ObjectArrayMap<List<StructureTemplate.StructureBlockInfo>> buckets = new Int2ObjectArrayMap<>();
-
-        // Add entries to the bucket
-        for (StructureTemplate.StructureBlockInfo structureBlockInfo : list) {
-            int key = 0;
-            if (structureBlockInfo.nbt() != null) {
-                key = getIntMicroOptimised(structureBlockInfo.nbt(), "selection_priority");
-            }
-
-            buckets.computeIfAbsent(key, k -> new ArrayList<>()).add(structureBlockInfo);
-        }
-
-        // Shuffle the entries in the bucket
-        for (List<StructureTemplate.StructureBlockInfo> bucketList : buckets.values()) {
-            Util.shuffle(bucketList, random);
-        }
-
-        if (buckets.size() == 1) {
-            list.clear();
-            copyAll(buckets.get(0), list);
-        }
-        else if (buckets.size() > 1) {
-            // Priorities found. Concat them into a single new master list in reverse order to match vanilla behavior
-            list.clear();
-
-            IntArrayList keys = new IntArrayList(buckets.keySet());
-            keys.sort(IntComparators.OPPOSITE_COMPARATOR);
-
-            for (int i = 0; i < keys.size(); i++) {
-                copyAll(buckets.get(keys.getInt(i)), list);
-            }
         }
     }
 

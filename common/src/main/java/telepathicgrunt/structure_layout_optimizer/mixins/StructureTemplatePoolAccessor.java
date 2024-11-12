@@ -10,6 +10,6 @@ import java.util.List;
 
 @Mixin(StructureTemplatePool.class)
 public interface StructureTemplatePoolAccessor {
-    @Accessor
+    @Accessor("rawTemplates")
     List<Pair<StructurePoolElement, Integer>> getRawTemplates();
 }
