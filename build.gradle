@@ -82,14 +82,20 @@ subprojects {
     }
 
     jar {
-        from(rootProject.file("LICENSE.txt")) {
+        def licenseFile = rootProject.file("LICENSE.txt")
+        inputs.file(licenseFile)
+
+        from(licenseFile) {
             rename { "LICENSE_${mod_name}.txt" }
         }
     }
 
     sourcesJar {
-        from(rootProject.file("LICENSE.txt")) {
-            rename { "LICENSE_${mod_id}.txt" }
+        def licenseFile = rootProject.file("LICENSE.txt")
+        inputs.file(licenseFile)
+
+        from(licenseFile) {
+            rename { "LICENSE_${mod_name}.txt" }
         }
     }
 
