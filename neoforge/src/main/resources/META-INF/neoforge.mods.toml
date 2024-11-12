@@ -20,7 +20,7 @@ config="structure_layout_optimizer.mixins.json"
 [dependencies]
 "${mod_id}" = [
     { modId = "neoforge", type = "required", versionRange = "*", ordering = "NONE", side = "BOTH" },
-    { modId = "minecraft", type = "required", versionRange = "[1.21,)", ordering = "NONE", side = "BOTH" },
+    { modId = "minecraft", type = "required", versionRange = "[1.21,1.22)", ordering = "NONE", side = "BOTH" },
     { modId = "resourcefulconfig", type = "required", versionRange = "*", ordering = "NONE", side = "BOTH" },
 ]
 
