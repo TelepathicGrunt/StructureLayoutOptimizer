@@ -2,12 +2,9 @@ package telepathicgrunt.structure_layout_optimizer.utils;
 
 import net.minecraft.core.FrontAndTop;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.world.level.block.JigsawBlock;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
-
-import java.util.List;
 
 public final class GeneralUtils {
     private GeneralUtils() {}
@@ -33,19 +30,7 @@ public final class GeneralUtils {
     }
 
     // From Thailkil by reducing grabbing of the entry by half
-    public static int getIntMicroOptimised(CompoundTag tag, String key) {
-        return tag.get(key) instanceof NumericTag numericTag ? numericTag.getAsInt() : 0;
-    }
-
     public static String getStringMicroOptimised(CompoundTag tag, String key) {
         return tag.get(key) instanceof StringTag stringTag ? stringTag.getAsString() : "";
-    }
-
-    // From XFactHD at https://github.com/XFactHD/FramedBlocks/blob/d89311e31d55630b5a9cecd3b8f75abcf9693ce0/src/main/java/xfacthd/framedblocks/api/util/Utils.java#L396-L409
-    public static <T> void copyAll(List<T> src, List<T> dest) {
-        // Do not listen to IDE. This is faster than addAll
-        for (int i = 0; i < src.size(); i++) {
-            dest.add(src.get(i));
-        }
     }
 }
