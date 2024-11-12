@@ -1,25 +1,23 @@
 package telepathicgrunt.structure_layout_optimizer;
 
-import com.teamresourceful.resourcefulconfig.api.annotations.Comment;
-import com.teamresourceful.resourcefulconfig.api.annotations.Config;
-import com.teamresourceful.resourcefulconfig.api.annotations.ConfigEntry;
-import com.teamresourceful.resourcefulconfig.api.annotations.ConfigInfo;
+import com.teamresourceful.resourcefulconfig.common.annotations.Comment;
+import com.teamresourceful.resourcefulconfig.common.annotations.Config;
+import com.teamresourceful.resourcefulconfig.common.annotations.ConfigEntry;
+import com.teamresourceful.resourcefulconfig.common.config.EntryType;
+import com.teamresourceful.resourcefulconfig.web.annotations.Link;
+import com.teamresourceful.resourcefulconfig.web.annotations.WebInfo;
 
-@ConfigInfo(
+@WebInfo(
         title = "Structure Layout Optimizer",
-        titleTranslation = "config.structure_layout_optimizer.title",
-
         description = "An attempt at optimizing jigsaw generation",
-        descriptionTranslation = "config.structure_layout_optimizer.desc",
-
         icon = "layout-template",
         links = {
-                @ConfigInfo.Link(text = "Curseforge", value = "https://www.curseforge.com/projects/1087831", icon = "curseforge"),
-                @ConfigInfo.Link(text = "Modrinth", value = "https://modrinth.com/mod/ayPU0OHc", icon = "modrinth"),
-                @ConfigInfo.Link(text = "Report a Bug", textTranslation = "config.structure_layout_optimizer.link.bug_report", value = "https://github.com/TelepathicGrunt/StructureLayoutOptimizer/issues", icon = "bug"),
-                @ConfigInfo.Link(text = "GitHub", value = "https://github.com/TelepathicGrunt/StructureLayoutOptimizer", icon = "github"),
-                @ConfigInfo.Link(text = "Discord", value = "https://discord.gg/K8qRev3yKZ", icon = "gamepad-2"),
-                @ConfigInfo.Link(text = "License", textTranslation = "config.structure_layout_optimizer.link.license", value = "https://github.com/TelepathicGrunt/StructureLayoutOptimizer/blob/HEAD/LICENSE.txt", icon = "copyright"),
+                @Link(title = "Curseforge", value = "https://www.curseforge.com/projects/1087831", icon = "curseforge"),
+                @Link(title = "Modrinth", value = "https://modrinth.com/mod/ayPU0OHc", icon = "modrinth"),
+                @Link(title = "Report a Bug", value = "https://github.com/TelepathicGrunt/StructureLayoutOptimizer/issues", icon = "bug"),
+                @Link(title = "GitHub", value = "https://github.com/TelepathicGrunt/StructureLayoutOptimizer", icon = "github"),
+                @Link(title = "Discord", value = "https://discord.gg/K8qRev3yKZ", icon = "gamepad-2"),
+                @Link(title = "License", value = "https://github.com/TelepathicGrunt/StructureLayoutOptimizer/blob/HEAD/LICENSE.txt", icon = "copyright"),
         }
 )
 @Config(StructureLayoutOptimizerMod.MODID)
@@ -37,6 +35,6 @@ public class SloConfig {
             Pros: Get a bit more performance from high weight Template Pool Structures.
             Cons: Loses parity with vanilla seeds on the layout of the structure. (Structure layout is not broken, just different)
             """, translation = "config.structure_layout_optimizer.deduplicate_shuffled_template_pool_element_list.desc")
-    @ConfigEntry(id = "deduplicateShuffledTemplatePoolElementList", translation = "config.structure_layout_optimizer.deduplicate_shuffled_template_pool_element_list")
+    @ConfigEntry(type = EntryType.BOOLEAN, id = "deduplicateShuffledTemplatePoolElementList", translation = "config.structure_layout_optimizer.deduplicate_shuffled_template_pool_element_list")
     public static boolean deduplicateShuffledTemplatePoolElementList = false;
 }

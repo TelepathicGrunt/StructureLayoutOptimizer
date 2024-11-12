@@ -17,6 +17,9 @@
   "entrypoints": {
     "main": [
       "telepathicgrunt.structure_layout_optimizer.fabric.entrypoints.Main"
+    ],
+    "modmenu": [
+      "telepathicgrunt.structure_layout_optimizer.fabric.entrypoints.Modmenu"
     ]
   },
   "depends": {
