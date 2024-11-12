@@ -21,7 +21,7 @@ import com.teamresourceful.resourcefulconfig.web.annotations.WebInfo;
         }
 )
 @Config(StructureLayoutOptimizerMod.MODID)
-public class SloConfig {
+public final class SloConfig {
 
     @Comment(value = """
             Whether to use an alternative strategy to make structure layouts generate slightly even faster than

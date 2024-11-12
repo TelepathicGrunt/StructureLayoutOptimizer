@@ -1,4 +1,4 @@
-package telepathicgrunt.structure_layout_optimizer.neoforge.entrypoints;
+package telepathicgrunt.structure_layout_optimizer.forge.entrypoints;
 
 import com.teamresourceful.resourcefulconfig.client.ConfigScreen;
 import net.minecraftforge.client.ConfigScreenHandler;

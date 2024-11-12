@@ -1,18 +1,18 @@
-package telepathicgrunt.structure_layout_optimizer.neoforge.entrypoints;
+package telepathicgrunt.structure_layout_optimizer.forge.entrypoints;
 
-import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import telepathicgrunt.structure_layout_optimizer.StructureLayoutOptimizerMod;
 
 @Mod(StructureLayoutOptimizerMod.MODID)
 public class Main {
 
-    public Main(ModContainer modContainer) {
+    public Main(FMLJavaModLoadingContext context) {
         StructureLayoutOptimizerMod.init();
 
         if(FMLEnvironment.dist.isClient()) {
-            Client.init(modContainer);
+            Client.init(context.getContainer());
         }
     }
 }
