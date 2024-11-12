@@ -1,0 +1,150 @@
+plugins {
+    id 'fabric-loom' version '1.8-SNAPSHOT'
+}
+
+repositories {
+    maven { url = 'https://maven.terraformersmc.com/releases' }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "ParchmentMC"
+                url = "https://maven.parchmentmc.org"
+            }
+        }
+        filter {
+            includeGroupAndSubgroups("org.parchmentmc")
+        }
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings(loom.layered {
+        it.officialMojangMappings()
+        it.parchment("org.parchmentmc.data:parchment-${project.parchment_minecraft_version}:${project.parchment_mappings_version}@zip")
+    })
+    compileOnly project(":common")
+
+    modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+    modImplementation "com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-${project.resourceful_config_minecraft_version}:${project.resourceful_config_version}"
+
+    modCompileOnly("com.terraformersmc:modmenu:${project.mod_menu_version}") {
+        transitive = false
+    }
+    modLocalRuntime("com.terraformersmc:modmenu:${project.mod_menu_version}") {
+        transitive = false
+    }
+}
+
+publishMods {
+    modLoaders.add("fabric")
+    modLoaders.add("quilt")
+
+    def uploadDependenciesCf = [
+            '714059': true // resourceful config
+    ]
+    def uploadDependenciesMr = [
+            'M1953qlQ': true // resourceful config
+    ]
+
+    if (project.hasProperty('curseforge_id')) {
+        curseforge('curseforgeFabric') {
+            accessToken = providers.environmentVariable('CURSEFORGEKEY')
+            projectId = project.findProperty('curseforge_id')
+            minecraftVersions.add(project.minecraft_version)
+
+            uploadDependenciesCf.each { dep, required ->
+                if (required) {
+                    requires(dep)
+                } else {
+                    optional(dep)
+                }
+            }
+        }
+    }
+
+    if (project.hasProperty('modrinth_id')) {
+        modrinth('modrinthFabric') {
+            accessToken = providers.environmentVariable('MODRINTH_TOKEN')
+            projectId = project.findProperty('modrinth_id')
+            minecraftVersions.add(project.minecraft_version)
+
+            dependencies {
+                uploadDependenciesMr.each { dep, required ->
+                    if (required) {
+                        requires(dep)
+                    } else {
+                        optional(dep)
+                    }
+                }
+            }
+        }
+    }
+}
+
+loom {
+    mods {
+        "${mod_id}" {
+            // Tell Loom about each source set used by your mod here. This ensures that your mod's classes are properly transformed by Loader.
+            sourceSet sourceSets.main
+            sourceSet project(":common").sourceSets.main
+        }
+    }
+
+    def awFile = project.file("src/main/resources/${mod_id}.accesswidener")
+    if (awFile.exists()) {
+        accessWidenerPath.set(awFile)
+    }
+
+    mixin {
+        useLegacyMixinAp = false
+    }
+
+    runs {
+        configureEach {
+            runDir("run")
+            ideConfigGenerated(true)
+        }
+
+        client {
+            client()
+            setConfigName("Fabric Client")
+
+            if (project.hasProperty('mc_uuid')) {
+                programArg("--uuid=${project.findProperty('mc_uuid')}")
+            }
+
+            if (project.hasProperty('mc_username')) {
+                programArg("--username=${project.findProperty('mc_username')}")
+            }
+
+            if (project.hasProperty('mc_java_agent_path')) {
+                vmArg("-javaagent:${project.findProperty('mc_java_agent_path')}")
+            }
+        }
+
+        server {
+            server()
+            setConfigName("Fabric Server")
+            programArg('--nogui')
+        }
+    }
+}
+
+tasks.named("compileJava", JavaCompile) {
+    source(project(":common").sourceSets.main.allJava)
+}
+
+tasks.named("javadoc", Javadoc).configure {
+    source(project(":common").sourceSets.main.allJava)
+}
+
+tasks.named("sourcesJar", Jar) {
+    from(project(":common").sourceSets.main.allSource)
+}
+
+processResources {
+    from project(":common").sourceSets.main.resources
+}

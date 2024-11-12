@@ -1,75 +1,155 @@
 plugins {
-    id 'java-library'
+    id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.moddev' version '1.0.14'
-    id "me.modmuss50.mod-publish-plugin" version "0.5.1"
+    id 'me.modmuss50.mod-publish-plugin' version '0.7.4' apply false
+    id 'net.neoforged.moddev' version '2.0.43-beta' apply false
 }
 
-apply plugin: "me.modmuss50.mod-publish-plugin"
+def javaVersion = 21
 
-tasks.named('wrapper', Wrapper).configure {
-    distributionType = Wrapper.DistributionType.BIN
-}
-
+def ENV = System.getenv()
 version = mod_version
 group = mod_group_id
 
-repositories {
-    mavenLocal()
-}
-
-base {
-    archivesName = mod_id
-}
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
-
-neoForge {
-    version = project.neo_version
-
-    parchment {
-        mappingsVersion = project.parchment_mappings_version
-        minecraftVersion = project.parchment_minecraft_version
-    }
-
-    // This line is optional. Access Transformers are automatically detected
-    // accessTransformers = project.files('src/main/resources/META-INF/accesstransformer.cfg')
-
-    runs {
-        client {
-            client()
-            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
-        }
-
-        server {
-            server()
-            programArgument '--nogui'
-            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
-        }
-
-        configureEach {
-            logLevel = org.slf4j.event.Level.DEBUG
-        }
-    }
-
-    mods {
-        "${mod_id}" {
-            sourceSet(sourceSets.main)
-        }
+allprojects {
+    tasks.register('buildAndRelease') {
+        dependsOn(tasks.build, tasks.publish)
     }
 }
 
-sourceSets.main.resources { srcDir 'src/generated/resources' }
+subprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
+    apply plugin: 'me.modmuss50.mod-publish-plugin'
+    project.group = rootProject.group
+    project.version = rootProject.version
 
-configurations {
-    runtimeClasspath.extendsFrom localRuntime
+    repositories {
+        maven { url = 'https://maven.teamresourceful.com/repository/maven-releases' }
+    }
+
+    dependencies {
+        compileOnly "org.jetbrains:annotations:${jetbrains_annotations_version}"
+    }
+
+    base {
+        archivesName.set("${mod_id}-${project.name}")
+    }
+
+    processResources {
+        filteringCharset "UTF-8"
+
+        def expandProps = [
+                "version"              : project.version,
+                "maven_group_id"       : project.mod_group_id,
+                "mod_id"               : project.mod_id,
+                "mod_display_name"     : project.mod_name,
+                "mod_description"      : project.mod_description,
+                "sources_url"          : project.sources_url,
+                "issues_url"           : project.issues_url,
+                "license_url"          : project.license_url,
+                "homepage_url"         : project.homepage_url,
+
+                "minecraft_version"    : project.minecraft_version,
+                "neoforge_version"     : project.neoforge_version,
+                "fabric_loader_version": project.fabric_loader_version,
+                "java_version"         : "${javaVersion}",
+        ]
+
+        filesMatching(['pack.mcmeta', '*.mod.json', 'META-INF/neoforge.mods.toml', '*.mixins.json']) {
+            expand expandProps
+        }
+        inputs.properties(expandProps)
+    }
+
+    java {
+        if (JavaVersion.current() < JavaVersion.toVersion(javaVersion)) {
+            toolchain {
+                languageVersion = JavaLanguageVersion.of(javaVersion)
+            }
+        } else {
+            sourceCompatibility = JavaVersion.toVersion(javaVersion)
+            targetCompatibility = JavaVersion.toVersion(javaVersion)
+        }
+
+        withSourcesJar()
+//        withJavadocJar()
+    }
+
+    javadoc {
+        // make javadoc not throw on mixin's '@reason'
+        options.tags = ["reason"]
+    }
+
+    jar {
+        from(rootProject.file("LICENSE.txt")) {
+            rename { "LICENSE_${mod_name}.txt" }
+        }
+    }
+
+    sourcesJar {
+        from(rootProject.file("LICENSE.txt")) {
+            rename { "LICENSE_${mod_id}.txt" }
+        }
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.release.set(javaVersion)
+    }
+
+    tasks.publishMods.mustRunAfter tasks.publish
+    tasks.buildAndRelease.dependsOn(tasks.publishMods)
+
+    publishing {
+        publications {
+            "mavenJava${project.name}"(MavenPublication) {
+                artifactId "${project.mod_id}-${project.name}"
+                from components.java
+
+                pom {
+                    name = project.mod_name
+                    description = project.mod_description
+                    url = project.sources_url
+
+                    scm {
+                        connection = "git:${project.sources_url}.git"
+                        developerConnection = "git:${project.sources_url}.git"
+                        url = project.sources_url
+                    }
+
+                    licenses {
+                        license {
+                            name = 'MIT License'
+                            url = project.license_url
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id = 'telepathic_grunt'
+                            name = 'TelepathicGrunt'
+                            email = 'asarnesespam@gmail.com'
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+
+    publishMods {
+        type = BETA
+
+        displayName = "Structure Layout Optimizer v${project.mod_version} (${project.name} ${project.minecraft_version})"
+        version = "${project.version}+${project.minecraft_version}-${project.name}"
+
+        def changeLogFile = project.file("CHANGELOG.md")
+        changelog = changeLogFile.exists() ? changeLogFile.text : ""
+    }
 }
 
-dependencies {
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+tasks.named('wrapper', Wrapper).configure {
+    distributionType = Wrapper.DistributionType.BIN
 }
 
 // IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
@@ -81,116 +161,17 @@ idea {
 }
 
 ////////////////////////////////////////////RELEASING/////////////////////////////////////////////
-version = "${project.mod_version}+${project.minecraft_version}"
-var ENV = System.getenv()
-def uploadSettings = [
-        "curse-id": "1087831",
-        "modrinth-id": "ayPU0OHc"
-]
-def uploadDependencies = []
-
-if (uploadSettings != null && uploadDependencies != null) {
-
-    File changeLog = project.file("CHANGELOG.md")
-    String changelogText = changeLog.exists() ? changeLog.text : ""
-
-    publishMods {
-        file = tasks.jar.archiveFile
-        type = BETA
-        changelog = changelogText
-
-        displayName = "Structure Layout Optimizer v${project.mod_version} (${project.minecraft_version})"
-        version = "${project.version}"
-        modLoaders.add("neoforge")
-
-        if (ENV.CURSEFORGEKEY) {
-            curseforge {
-                accessToken = ENV.CURSEFORGEKEY
-                projectId = uploadSettings["curse-id"]
-                minecraftVersions.add(project.minecraft_version)
-
-                if (uploadDependencies.size() > 0) {
-                    uploadDependencies.each { dep, required ->
-                        if (required) {
-                            requires(dep)
-                        }
-                        else {
-                            optional(dep)
-                        }
-                    }
-                }
-            }
-        }
-
-        if (ENV.MODRINTH_TOKEN) {
-            modrinth {
-                accessToken = ENV.MODRINTH_TOKEN
-                projectId = uploadSettings["modrinth-id"]
-                minecraftVersions.add(project.minecraft_version)
-
-                dependencies {
-                    uploadDependencies.each { dep, required ->
-                        if (required) {
-                            requires(dep)
-                        } else {
-                            optional(dep)
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
 
 publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact jar
-
-            artifactId = mod_id
-
-            pom {
-                name = 'Structure Layout Optimizer'
-                description = 'An attempt at optimizing jigsaw generation'
-                url = 'https://github.com/TelepathicGrunt/StructureLayoutOptimizer'
-
-                scm {
-                    connection = 'git:https://github.com/TelepathicGrunt/StructureLayoutOptimizer.git'
-                    developerConnection = 'git:https://github.com/TelepathicGrunt/StructureLayoutOptimizer.git'
-                    url = 'https://github.com/TelepathicGrunt/StructureLayoutOptimizer'
-                }
-
-                licenses {
-                    license {
-                        name = 'MIT License'
-                        url = 'https://github.com/TelepathicGrunt/StructureLayoutOptimizer/blob/master/LICENSE.txt'
-                    }
-                }
-
-                developers {
-                    developer {
-                        id = 'telepathic_grunt'
-                        name = 'TelepathicGrunt'
-                        email = 'asarnesespam@gmail.com'
-                    }
-                }
-            }
-
-        }
-    }
-
     repositories {
-        maven {
-            url = uri("https://nexus.resourcefulbees.com/repository/telepathicgrunt/")
-            credentials {
-                username ENV.MAVEN_USER
-                password ENV.MAVEN_PASS
+        if (ENV.MAVEN_USER) {
+            maven {
+                url = uri("https://nexus.resourcefulbees.com/repository/telepathicgrunt/")
+                credentials {
+                    username ENV.MAVEN_USER
+                    password ENV.MAVEN_PASS
+                }
             }
         }
     }
 }
-
-tasks.register('buildAndRelease') {}
-tasks.publish.mustRunAfter tasks.build
-tasks.publishMods.mustRunAfter tasks.publish
-tasks.buildAndRelease.dependsOn(tasks.build, tasks.publish, tasks.publishMods)

@@ -1,7 +1,7 @@
 package telepathicgrunt.structure_layout_optimizer.utils;
 
 import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashSet;

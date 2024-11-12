@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${version}",
+  "name": "${mod_display_name}",
+  "description": "${mod_description}",
+  "authors": [
+    "TelepathicGrunt"
+  ],
+  "contact": {
+    "homepage": "${homepage_url}",
+    "sources": "${sources_url}",
+    "issues": "${issues_url}"
+  },
+  "license": "MIT",
+  "icon": "structure_layout_optimizer.png",
+  "entrypoints": {
+    "main": [
+      "telepathicgrunt.structure_layout_optimizer.fabric.entrypoints.Main"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${fabric_loader_version}",
+    "minecraft": "=${minecraft_version}",
+    "java": ">=${java_version}",
+    "fabric-api": "*",
+    "resourcefulconfig": "*"
+  },
+  "environment": "*",
+  "accessWidener": "${mod_id}.accesswidener",
+  "mixins": [
+    "${mod_id}.mixins.json"
+  ]
+}

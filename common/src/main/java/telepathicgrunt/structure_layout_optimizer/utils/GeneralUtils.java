@@ -14,9 +14,14 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ServiceLoader;
 
 public final class GeneralUtils {
     private GeneralUtils() {}
+
+    public static <T> T loadService(Class<T> service) {
+        return ServiceLoader.load(service).findFirst().orElseThrow(() -> new IllegalStateException("No platform implementation found for " + service.getName()));
+    }
 
     // More optimized with checking if the jigsaw blocks can connect
     public static boolean canJigsawsAttach(StructureTemplate.StructureBlockInfo jigsaw1, StructureTemplate.StructureBlockInfo jigsaw2) {
@@ -82,7 +87,7 @@ public final class GeneralUtils {
         return tag.get(key) instanceof StringTag stringTag ? stringTag.getAsString() : "";
     }
 
-    // From XFactHD at https://github.com/XFactHD/FramedBlocks/blob/1.21/src/main/java/xfacthd/framedblocks/api/util/Utils.java#L372-L385
+    // From XFactHD at https://github.com/XFactHD/FramedBlocks/blob/d89311e31d55630b5a9cecd3b8f75abcf9693ce0/src/main/java/xfacthd/framedblocks/api/util/Utils.java#L396-L409
     public static <T> void copyAll(List<T> src, List<T> dest) {
         // Do not listen to IDE. This is faster than addAll
         for (int i = 0; i < src.size(); i++) {

@@ -6,15 +6,10 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.block.Rotation;
-import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
-import net.minecraft.world.level.levelgen.structure.PoolElementStructurePiece;
 import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
-import net.minecraft.world.level.levelgen.structure.pools.alias.PoolAliasLookup;
-import net.minecraft.world.level.levelgen.structure.templatesystem.LiquidSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import net.minecraft.world.phys.AABB;
@@ -26,11 +21,9 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.include.com.google.common.collect.Lists;
-import telepathicgrunt.structure_layout_optimizer.StructureLayoutOptimizerConfig;
+import telepathicgrunt.structure_layout_optimizer.SloConfig;
 import telepathicgrunt.structure_layout_optimizer.utils.BoxOctree;
 import telepathicgrunt.structure_layout_optimizer.utils.GeneralUtils;
 import telepathicgrunt.structure_layout_optimizer.utils.TrojanArrayList;
@@ -98,7 +91,7 @@ public class JigsawPlacementPlacerMixin {
     @Redirect(method = "tryPlacingChildren(Lnet/minecraft/world/level/levelgen/structure/PoolElementStructurePiece;Lorg/apache/commons/lang3/mutable/MutableObject;IZLnet/minecraft/world/level/LevelHeightAccessor;Lnet/minecraft/world/level/levelgen/RandomState;Lnet/minecraft/world/level/levelgen/structure/pools/alias/PoolAliasLookup;Lnet/minecraft/world/level/levelgen/structure/templatesystem/LiquidSettings;)V",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/levelgen/structure/pools/StructureTemplatePool;getShuffledTemplates(Lnet/minecraft/util/RandomSource;)Ljava/util/List;", ordinal = 0))
     private List<StructurePoolElement> structureLayoutOptimizer$removeDuplicateTemplatePoolElementLists(StructureTemplatePool instance, RandomSource random) {
-        if (!StructureLayoutOptimizerConfig.DEDUPLICATE_SHUFFLED_TEMPLATE_POOL_ELEMENT_LIST.get()) {
+        if (!SloConfig.deduplicateShuffledTemplatePoolElementList) {
             return instance.getShuffledTemplates(random);
         }
 
@@ -108,6 +101,7 @@ public class JigsawPlacementPlacerMixin {
         // Don't use addAll. Want to keep it simple in case of inefficiency in collection's addAll.
         // Set will ignore duplicates after first appearance of an element.
         for (StructurePoolElement piece : instance.getShuffledTemplates(random)) {
+            //noinspection UseBulkOperation
             uniquePieces.add(piece);
         }
 
@@ -125,7 +119,7 @@ public class JigsawPlacementPlacerMixin {
             at = @At(value = "INVOKE", target = "Lcom/google/common/collect/Lists;newArrayList()Ljava/util/ArrayList;", ordinal = 0, remap = false))
     private ArrayList<StructurePoolElement> structureLayoutOptimizer$skipDuplicateTemplatePoolElementLists1() {
         // Swap with trojan list, so we can record what pieces we visited
-        return StructureLayoutOptimizerConfig.DEDUPLICATE_SHUFFLED_TEMPLATE_POOL_ELEMENT_LIST.get() ? Lists.newArrayList() : new TrojanArrayList<>();
+        return SloConfig.deduplicateShuffledTemplatePoolElementList ? Lists.newArrayList() : new TrojanArrayList<>();
     }
 
     @ModifyExpressionValue(
@@ -135,7 +129,7 @@ public class JigsawPlacementPlacerMixin {
                                                                                            @Local(ordinal = 0) List<StructurePoolElement> list,
                                                                                            @Local(ordinal = 1) StructurePoolElement structurepoolelement1)
     {
-        if (!StructureLayoutOptimizerConfig.DEDUPLICATE_SHUFFLED_TEMPLATE_POOL_ELEMENT_LIST.get() && list instanceof TrojanArrayList<StructurePoolElement> trojanArrayList) {
+        if (!SloConfig.deduplicateShuffledTemplatePoolElementList && list instanceof TrojanArrayList<StructurePoolElement> trojanArrayList) {
             // Do not run this piece's logic since we already checked its 4 rotations in the past.
             if (trojanArrayList.elementsAlreadyParsed.contains(structurepoolelement1)) {
 
@@ -158,4 +152,3 @@ public class JigsawPlacementPlacerMixin {
         return original;
     }
 }
-

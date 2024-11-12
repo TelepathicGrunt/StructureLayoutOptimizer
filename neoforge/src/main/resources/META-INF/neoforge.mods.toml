@@ -1,0 +1,28 @@
+modLoader="javafml"
+loaderVersion="[4,)"
+license="MIT"
+issueTrackerURL="${issues_url}"
+sourcesUrl="${sources_url}"
+
+[[mods]]
+modId="${mod_id}"
+version="${version}"
+displayName="${mod_display_name}"
+displayURL="${homepage_url}"
+logoFile="structure_layout_optimizer.png"
+logoBlur=false
+authors="TelepathicGrunt"
+description='''${mod_description}'''
+
+[[mixins]]
+config="structure_layout_optimizer.mixins.json"
+
+[dependencies]
+"${mod_id}" = [
+    { modId = "neoforge", type = "required", versionRange = "*", ordering = "NONE", side = "BOTH" },
+    { modId = "minecraft", type = "required", versionRange = "[1.21,)", ordering = "NONE", side = "BOTH" },
+    { modId = "resourcefulconfig", type = "required", versionRange = "*", ordering = "NONE", side = "BOTH" },
+]
+
+[features]
+"${mod_id}" = { javaVersion = "[${java_version},)" }

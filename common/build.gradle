@@ -1,0 +1,51 @@
+plugins {
+    id 'net.neoforged.moddev'
+}
+
+// Vanilla depends on ASM 9.3, MDG makes that a 'strict' version constraint,
+// but Mixin and MixinExtras needs newer ASM so we override that here.
+configurations.configureEach {
+    resolutionStrategy.eachDependency { details ->
+        if (details.requested.group == "org.ow2.asm") {
+            details.useVersion(project.asm_version)
+            details.because("Mixin requires new ASM")
+        }
+    }
+}
+
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
+}
+
+dependencies {
+    compileOnly "org.ow2.asm:asm:${project.asm_version}"
+    compileOnly "org.ow2.asm:asm-analysis:${project.asm_version}"
+    compileOnly "org.ow2.asm:asm-commons:${project.asm_version}"
+    compileOnly "org.ow2.asm:asm-tree:${project.asm_version}"
+    compileOnly "org.ow2.asm:asm-util:${project.asm_version}"
+
+    compileOnly "net.fabricmc:sponge-mixin:${project.mixin_version}"
+    compileOnly "io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}"
+    annotationProcessor "io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}"
+
+    compileOnly "com.teamresourceful.resourcefulconfig:resourcefulconfig-common-${project.resourceful_config_minecraft_version}:${project.resourceful_config_version}"
+}
+
+neoForge {
+    neoFormVersion = project.neoform_version
+
+    parchment {
+        minecraftVersion = project.parchment_minecraft_version
+        mappingsVersion = project.parchment_mappings_version
+    }
+
+    def atFile = file("src/main/resources/META-INF/accesstransformer.cfg")
+    if (atFile.exists()) {
+        accessTransformers {
+            from atFile
+            publish atFile
+        }
+    }
+
+    validateAccessTransformers.set(true)
+}
