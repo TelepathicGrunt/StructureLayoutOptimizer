@@ -48,9 +48,9 @@ jobs:
         continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.event.repository.name }}-NeoForge-${{ github.sha }}
+          name: ${{ github.event.repository.name }}-Forge-${{ github.sha }}
           path: |
-            neoforge/build/libs/*.jar
+            forge/build/libs/*.jar
 
       # run tests
 #      - name: Run tests
