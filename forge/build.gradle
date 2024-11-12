@@ -25,7 +25,7 @@ dependencies {
 }
 
 publishMods {
-    file = tasks.jar.archiveFile
+    file = tasks.jarJar.archiveFile
     modLoaders.add("forge")
 
     def uploadDependenciesCf = [
@@ -147,6 +147,7 @@ jar {
 
 tasks.named('jarJar', AbstractArchiveTask).configure {
     archiveClassifier.set('')
+    finalizedBy('reobfJarJar')
 }
 
 publishing {

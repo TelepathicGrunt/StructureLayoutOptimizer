@@ -51,6 +51,7 @@ jobs:
           name: ${{ github.event.repository.name }}-Forge-${{ github.sha }}
           path: |
             forge/build/libs/*.jar
+            !forge/build/libs/*-slim.jar
 
       # run tests
 #      - name: Run tests
