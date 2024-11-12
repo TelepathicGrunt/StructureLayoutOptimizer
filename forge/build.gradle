@@ -1,0 +1,159 @@
+plugins {
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'org.spongepowered.mixin' version '0.7-SNAPSHOT'
+    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+}
+jarJar.enable()
+
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
+    compileOnly(project(':common')) {
+        transitive = false
+    }
+    compileOnly "io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}"
+    annotationProcessor "io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}"
+    implementation "io.github.llamalad7:mixinextras-forge:${project.mixin_extras_version}"
+    jarJar("io.github.llamalad7:mixinextras-forge:${project.mixin_extras_version}") {
+        jarJar.ranged(it, "[${project.mixin_extras_version},)")
+    }
+
+    implementation "com.teamresourceful.resourcefulconfig:resourcefulconfig-forge-${project.resourceful_config_minecraft_version}:${project.resourceful_config_version}"
+}
+
+publishMods {
+    file = tasks.jar.archiveFile
+    modLoaders.add("forge")
+
+    def uploadDependenciesCf = [
+            '714059': true // resourceful config
+    ]
+    def uploadDependenciesMr = [
+            'M1953qlQ': true // resourceful config
+    ]
+
+    if (project.hasProperty('curseforge_id')) {
+        curseforge('CurseforgeForge') {
+
+            accessToken = providers.environmentVariable('CURSEFORGEKEY')
+            projectId = project.findProperty('curseforge_id')
+            minecraftVersions.add(project.minecraft_version)
+
+            uploadDependenciesCf.each { dep, required ->
+                if (required) {
+                    requires(dep)
+                } else {
+                    optional(dep)
+                }
+            }
+        }
+    }
+
+    if (project.hasProperty('modrinth_id')) {
+        modrinth('modrinthForge') {
+            accessToken = accessToken = providers.environmentVariable('MODRINTH_TOKEN')
+            projectId = project.findProperty('modrinth_id')
+            minecraftVersions.add(project.minecraft_version)
+
+            dependencies {
+                uploadDependenciesMr.each { dep, required ->
+                    if (required) {
+                        requires(dep)
+                    } else {
+                        optional(dep)
+                    }
+                }
+            }
+        }
+    }
+}
+
+mixin {
+    add(sourceSets.main, "${mod_id}.refmap.json")
+
+    config("${mod_id}.mixins.json")
+//    config("${mod_id}.forge.mixins.json")
+}
+
+minecraft {
+    mappings channel: 'parchment', version: "${project.parchment_mappings_version}-${project.parchment_minecraft_version}"
+
+    copyIdeResources = true //Calls processResources when in dev
+
+    // Automatically enable forge AccessTransformers if the file exists
+    // This location is hardcoded in Forge and can not be changed.
+    // https://github.com/MinecraftForge/MinecraftForge/blob/be1698bb1554f9c8fa2f58e32b9ab70bc4385e60/fmlloader/src/main/java/net/minecraftforge/fml/loading/moddiscovery/ModFile.java#L123
+    def atFile = project.file('src/main/resources/META-INF/accesstransformer.cfg')
+    if (atFile.exists()) {
+        accessTransformer = atFile
+    }
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            taskName 'Client'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', project.layout.buildDirectory.get().file('createSrgToMcp/output.srg').asFile.absolutePath
+            property 'forge.logging.markers', 'REGISTRIES'
+            mods {
+                modClientRun {
+                    source sourceSets.main
+                    source project(":common").sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            taskName 'Server'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', project.layout.buildDirectory.get().file('createSrgToMcp/output.srg').asFile.absolutePath
+            property 'forge.logging.markers', 'REGISTRIES'
+            mods {
+                modServerRun {
+                    source sourceSets.main
+                    source project(":common").sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+tasks.named("compileJava", JavaCompile) {
+    source(project(":common").sourceSets.main.allJava)
+}
+
+tasks.named("javadoc", Javadoc) {
+    source(project(":common").sourceSets.main.allJava)
+}
+
+tasks.named("sourcesJar", Jar) {
+    from(project(":common").sourceSets.main.allSource)
+}
+
+processResources {
+    from project(":common").sourceSets.main.resources
+}
+
+jar {
+    archiveClassifier.set("slim")
+    finalizedBy('reobfJar')
+}
+
+tasks.named('jarJar', AbstractArchiveTask).configure {
+    archiveClassifier.set('')
+}
+
+publishing {
+    publications {
+        "mavenJava${project.name}"(MavenPublication) {
+            fg.component(it)
+            jarJar.component(it)
+        }
+    }
+}

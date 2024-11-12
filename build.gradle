@@ -2,10 +2,11 @@ plugins {
     id 'idea'
     id 'maven-publish'
     id 'me.modmuss50.mod-publish-plugin' version '0.7.4' apply false
+    id 'fabric-loom' version '1.8-SNAPSHOT' apply false
     id 'net.neoforged.moddev' version '2.0.43-beta' apply false
 }
 
-def javaVersion = 21
+def javaVersion = 17
 
 def ENV = System.getenv()
 version = mod_version
@@ -19,6 +20,7 @@ allprojects {
 
 subprojects {
     apply plugin: 'java-library'
+    apply plugin: 'idea'
     apply plugin: 'maven-publish'
     apply plugin: 'me.modmuss50.mod-publish-plugin'
     project.group = rootProject.group
@@ -26,6 +28,23 @@ subprojects {
 
     repositories {
         maven { url = 'https://maven.teamresourceful.com/repository/maven-releases' }
+        exclusiveContent {
+            forRepository {
+                maven {
+                    name = "ParchmentMC"
+                    url = "https://maven.parchmentmc.org"
+                }
+            }
+            filter {
+                includeGroupAndSubgroups("org.parchmentmc")
+            }
+        }
+        maven {
+            url = 'https://repo.spongepowered.org/repository/maven-public'
+            content {
+                includeGroupAndSubgroups("org.spongepowered")
+            }
+        }
     }
 
     dependencies {
@@ -51,12 +70,12 @@ subprojects {
                 "homepage_url"         : project.homepage_url,
 
                 "minecraft_version"    : project.minecraft_version,
-                "neoforge_version"     : project.neoforge_version,
+                "forge_version"        : project.forge_version,
                 "fabric_loader_version": project.fabric_loader_version,
                 "java_version"         : "${javaVersion}",
         ]
 
-        filesMatching(['pack.mcmeta', '*.mod.json', 'META-INF/neoforge.mods.toml', '*.mixins.json']) {
+        filesMatching(['pack.mcmeta', '*.mod.json', 'META-INF/mods.toml', '*.mixins.json']) {
             expand expandProps
         }
         inputs.properties(expandProps)

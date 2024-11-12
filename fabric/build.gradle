@@ -1,20 +1,9 @@
 plugins {
-    id 'fabric-loom' version '1.8-SNAPSHOT'
+    id 'fabric-loom'
 }
 
 repositories {
     maven { url = 'https://maven.terraformersmc.com/releases' }
-    exclusiveContent {
-        forRepository {
-            maven {
-                name = "ParchmentMC"
-                url = "https://maven.parchmentmc.org"
-            }
-        }
-        filter {
-            includeGroupAndSubgroups("org.parchmentmc")
-        }
-    }
 }
 
 dependencies {
@@ -95,7 +84,7 @@ loom {
         }
     }
 
-    def awFile = project.file("src/main/resources/${mod_id}.accesswidener")
+    def awFile = project(':common').file("src/main/resources/${mod_id}.accesswidener")
     if (awFile.exists()) {
         accessWidenerPath.set(awFile)
     }
