@@ -9,12 +9,17 @@ configurations {
     runtimeClasspath.extendsFrom localRuntime
 }
 
+repositories {
+    maven { url = 'https://maven.fabricmc.net' }
+}
+
 dependencies {
     minecraft "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
     compileOnly(project(':common')) {
         transitive = false
     }
 
+    annotationProcessor 'net.fabricmc:sponge-mixin:0.13.0+mixin.0.8.5'
     annotationProcessor "io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}"
     minecraftLibrary("io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}")
     minecraftEmbed("io.github.llamalad7:mixinextras-forge:${project.mixin_extras_version}") {
