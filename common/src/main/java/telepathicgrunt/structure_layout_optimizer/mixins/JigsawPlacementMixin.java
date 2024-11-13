@@ -17,7 +17,7 @@ import telepathicgrunt.structure_layout_optimizer.utils.TrojanVoxelShape;
 public class JigsawPlacementMixin {
 
     // need the intermediary name of the lambda method because fabric remaps those and uses intermediary even in dev
-    @WrapOperation(method = {"lambda$addPieces$2", "method_39824"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/shapes/Shapes;join(Lnet/minecraft/world/phys/shapes/VoxelShape;Lnet/minecraft/world/phys/shapes/VoxelShape;Lnet/minecraft/world/phys/shapes/BooleanOp;)Lnet/minecraft/world/phys/shapes/VoxelShape;"), require = 1)
+    @WrapOperation(method = {"lambda$addPieces$1", "method_39824"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/shapes/Shapes;join(Lnet/minecraft/world/phys/shapes/VoxelShape;Lnet/minecraft/world/phys/shapes/VoxelShape;Lnet/minecraft/world/phys/shapes/BooleanOp;)Lnet/minecraft/world/phys/shapes/VoxelShape;"), require = 1)
     private static VoxelShape structureLayoutOptimizer$replaceVoxelShape1(VoxelShape shape1, VoxelShape shape2, BooleanOp function, Operation<VoxelShape> original, @Local(ordinal = 0) AABB aabb, @Local(ordinal = 0, argsOnly = true) BoundingBox boundingbox) {
         TrojanVoxelShape trojanVoxelShape = new TrojanVoxelShape(new BoxOctree(aabb));
         trojanVoxelShape.boxOctree.addBox(AABB.of(boundingbox));
