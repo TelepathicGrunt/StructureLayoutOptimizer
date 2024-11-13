@@ -26,7 +26,7 @@ dependencies {
         jarJar.ranged(it, "[${project.mixin_extras_version},)")
     }
 
-    implementation "com.teamresourceful.resourcefulconfig:resourcefulconfig-forge-${project.resourceful_config_minecraft_version}:${project.resourceful_config_version}"
+    implementation fg.deobf("com.teamresourceful.resourcefulconfig:resourcefulconfig-forge-${project.resourceful_config_minecraft_version}:${project.resourceful_config_version}")
 }
 
 publishMods {
