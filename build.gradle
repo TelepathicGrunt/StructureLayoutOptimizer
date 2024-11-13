@@ -165,7 +165,7 @@ subprojects {
     publishMods {
         type = BETA
 
-        displayName = "Structure Layout Optimizer v${project.mod_version} (${project.name} ${project.minecraft_version})"
+        displayName = "${project.mod_name} v${project.mod_version} (${project.name} ${project.minecraft_version})"
         version = "${project.version}+${project.minecraft_version}-${project.name}"
 
         def changeLogFile = project.file("CHANGELOG.md")
