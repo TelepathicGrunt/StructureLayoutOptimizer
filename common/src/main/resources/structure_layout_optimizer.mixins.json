@@ -1,6 +1,7 @@
 {
   "required": true,
   "package": "telepathicgrunt.structure_layout_optimizer.mixins",
+  "refmap": "${mod_id}.refmap.json",
   "compatibilityLevel": "JAVA_${java_version}",
   "mixins": [
     "JigsawPlacementMixin",

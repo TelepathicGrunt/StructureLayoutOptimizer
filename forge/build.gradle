@@ -14,10 +14,10 @@ dependencies {
     compileOnly(project(':common')) {
         transitive = false
     }
-    compileOnly "io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}"
+
     annotationProcessor "io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}"
-    implementation "io.github.llamalad7:mixinextras-forge:${project.mixin_extras_version}"
-    jarJar("io.github.llamalad7:mixinextras-forge:${project.mixin_extras_version}") {
+    minecraftLibrary("io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}")
+    minecraftEmbed("io.github.llamalad7:mixinextras-forge:${project.mixin_extras_version}") {
         jarJar.ranged(it, "[${project.mixin_extras_version},)")
     }
 
