@@ -11,6 +11,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import org.jetbrains.annotations.NotNull;
 import telepathicgrunt.structure_layout_optimizer.StructureLayoutOptimizerMod;
+import telepathicgrunt.structure_layout_optimizer.services.PlatformService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.Map;
 public class StructureTemplateOptimizer {
 
     private static final Map<StructureProcessor, Boolean> FINALIZE_PROCESSING_PROCESSORS = new Object2BooleanOpenHashMap<>();
+    private static final String FINALIZE_PROCESSING_METHOD_NAME = PlatformService.INSTANCE.getFinalizeProcessingMethodName();
 
     public static @NotNull List<StructureTemplate.StructureBlockInfo> getStructureBlockInfosInBounds(StructureTemplate.Palette instance, BlockPos offset, StructurePlaceSettings structurePlaceSettings) {
         BoundingBox boundingBox = structurePlaceSettings.getBoundingBox();
@@ -56,7 +58,7 @@ public class StructureTemplateOptimizer {
     private static @NotNull Boolean isFinalizeProcessor(StructureProcessor structureProcessor) {
         try {
             var method = structureProcessor.getClass().getMethod(
-                    "finalizeProcessing",
+                    FINALIZE_PROCESSING_METHOD_NAME,
                     ServerLevelAccessor.class,
                     BlockPos.class,
                     BlockPos.class,
