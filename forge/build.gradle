@@ -21,12 +21,12 @@ dependencies {
 
     annotationProcessor 'net.fabricmc:sponge-mixin:0.13.0+mixin.0.8.5'
     annotationProcessor "io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}"
-    minecraftLibrary("io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}")
+    compileOnly("io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}")
     minecraftEmbed("io.github.llamalad7:mixinextras-forge:${project.mixin_extras_version}") {
         jarJar.ranged(it, "[${project.mixin_extras_version},)")
     }
 
-    implementation fg.deobf("com.teamresourceful.resourcefulconfig:resourcefulconfig-forge-${project.resourceful_config_minecraft_version}:${project.resourceful_config_version}")
+    implementation fg.deobf("me.shedaniel.cloth:cloth-config-forge:${project.cloth_config_version}")
 }
 
 publishMods {

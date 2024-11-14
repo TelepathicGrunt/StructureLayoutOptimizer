@@ -24,10 +24,10 @@
   },
   "depends": {
     "fabricloader": ">=${fabric_loader_version}",
-    "minecraft": "1.20.x",
+    "minecraft": "~1.19.2",
     "java": ">=${java_version}",
     "fabric-api": "*",
-    "resourcefulconfig": "*"
+    "cloth-config": "*"
   },
   "environment": "*",
   "accessWidener": "${mod_id}.accesswidener",

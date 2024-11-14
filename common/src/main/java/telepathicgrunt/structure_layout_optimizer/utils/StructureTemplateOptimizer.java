@@ -1,38 +1,22 @@
 package telepathicgrunt.structure_layout_optimizer.utils;
 
-import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import org.jetbrains.annotations.NotNull;
-import telepathicgrunt.structure_layout_optimizer.StructureLayoutOptimizerMod;
-import telepathicgrunt.structure_layout_optimizer.services.PlatformService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class StructureTemplateOptimizer {
-
-    private static final Map<StructureProcessor, Boolean> FINALIZE_PROCESSING_PROCESSORS = new Object2BooleanOpenHashMap<>();
-    private static final String FINALIZE_PROCESSING_METHOD_NAME = PlatformService.INSTANCE.getFinalizeProcessingMethodName();
 
     public static @NotNull List<StructureTemplate.StructureBlockInfo> getStructureBlockInfosInBounds(StructureTemplate.Palette instance, BlockPos offset, StructurePlaceSettings structurePlaceSettings) {
         BoundingBox boundingBox = structurePlaceSettings.getBoundingBox();
         if (boundingBox == null) {
             return instance.blocks();
-        }
-
-        // Capped processor needs full nbt block lists
-        for (StructureProcessor processor : structurePlaceSettings.getProcessors()) {
-            if (FINALIZE_PROCESSING_PROCESSORS.computeIfAbsent(processor, StructureTemplateOptimizer::isFinalizeProcessor)) {
-                return instance.blocks();
-            }
         }
 
         Mirror mirror = structurePlaceSettings.getMirror();
@@ -43,7 +27,7 @@ public class StructureTemplateOptimizer {
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
 
         for (StructureTemplate.StructureBlockInfo blockInfo : instance.blocks()) {
-            mutableBlockPos.set(blockInfo.pos());
+            mutableBlockPos.set(blockInfo.pos);
             transform(mutableBlockPos, mirror, rotation, pivot);
             mutableBlockPos.move(offset);
 
@@ -53,24 +37,6 @@ public class StructureTemplateOptimizer {
         }
 
         return list;
-    }
-
-    private static @NotNull Boolean isFinalizeProcessor(StructureProcessor structureProcessor) {
-        try {
-            var method = structureProcessor.getClass().getMethod(
-                    FINALIZE_PROCESSING_METHOD_NAME,
-                    ServerLevelAccessor.class,
-                    BlockPos.class,
-                    BlockPos.class,
-                    List.class,
-                    List.class,
-                    StructurePlaceSettings.class);
-
-            return method.getDeclaringClass() != StructureProcessor.class;
-        }
-        catch (NoSuchMethodException e) {
-            throw new RuntimeException("Unable to find 'finalizeProcessing' method. Report this major issue to Dev of " + StructureLayoutOptimizerMod.MODID, e);
-        }
     }
 
     private static void transform(BlockPos.MutableBlockPos mutableBlockPos, Mirror mirror, Rotation rotation, BlockPos pivot) {

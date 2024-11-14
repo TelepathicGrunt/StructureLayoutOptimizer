@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import telepathicgrunt.structure_layout_optimizer.SloConfig;
+import telepathicgrunt.structure_layout_optimizer.StructureLayoutOptimizerMod;
 import telepathicgrunt.structure_layout_optimizer.utils.BoxOctree;
 import telepathicgrunt.structure_layout_optimizer.utils.GeneralUtils;
 import telepathicgrunt.structure_layout_optimizer.utils.TrojanArrayList;
@@ -92,7 +92,7 @@ public class JigsawPlacementPlacerMixin {
     @Redirect(method = "tryPlacingChildren",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/levelgen/structure/pools/StructureTemplatePool;getShuffledTemplates(Lnet/minecraft/util/RandomSource;)Ljava/util/List;", ordinal = 0))
     private List<StructurePoolElement> structureLayoutOptimizer$removeDuplicateTemplatePoolElementLists(StructureTemplatePool instance, RandomSource random) {
-        if (!SloConfig.deduplicateShuffledTemplatePoolElementList) {
+        if (!StructureLayoutOptimizerMod.getConfig().deduplicateShuffledTemplatePoolElementList) {
             return instance.getShuffledTemplates(random);
         }
 
@@ -120,7 +120,7 @@ public class JigsawPlacementPlacerMixin {
             at = @At(value = "INVOKE", target = "Lcom/google/common/collect/Lists;newArrayList()Ljava/util/ArrayList;", ordinal = 0))
     private ArrayList<StructurePoolElement> structureLayoutOptimizer$skipDuplicateTemplatePoolElementLists1() {
         // Swap with trojan list, so we can record what pieces we visited
-        return SloConfig.deduplicateShuffledTemplatePoolElementList ? Lists.newArrayList() : new TrojanArrayList<>();
+        return StructureLayoutOptimizerMod.getConfig().deduplicateShuffledTemplatePoolElementList ? Lists.newArrayList() : new TrojanArrayList<>();
     }
 
     @ModifyExpressionValue(
@@ -130,7 +130,7 @@ public class JigsawPlacementPlacerMixin {
                                                                                            @Local(ordinal = 0) List<StructurePoolElement> list,
                                                                                            @Local(ordinal = 1) StructurePoolElement structurepoolelement1)
     {
-        if (!SloConfig.deduplicateShuffledTemplatePoolElementList && list instanceof TrojanArrayList<StructurePoolElement> trojanArrayList) {
+        if (!StructureLayoutOptimizerMod.getConfig().deduplicateShuffledTemplatePoolElementList && list instanceof TrojanArrayList<StructurePoolElement> trojanArrayList) {
             // Do not run this piece's logic since we already checked its 4 rotations in the past.
             if (trojanArrayList.elementsAlreadyParsed.contains(structurepoolelement1)) {
 

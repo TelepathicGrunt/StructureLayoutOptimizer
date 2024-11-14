@@ -1,14 +1,13 @@
 package telepathicgrunt.structure_layout_optimizer.forge.entrypoints;
 
-import com.teamresourceful.resourcefulconfig.client.ConfigScreen;
+import me.shedaniel.autoconfig.AutoConfig;
 import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.fml.ModContainer;
 import telepathicgrunt.structure_layout_optimizer.SloConfig;
-import telepathicgrunt.structure_layout_optimizer.StructureLayoutOptimizerMod;
 
 public class Client {
 
     public static void init(ModContainer modContainer) {
-        modContainer.registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, () -> new ConfigScreenHandler.ConfigScreenFactory((minecraft, parent) -> new ConfigScreen(parent, null, StructureLayoutOptimizerMod.CONFIGURATOR.getConfig(SloConfig.class))));
+        modContainer.registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, () -> new ConfigScreenHandler.ConfigScreenFactory((minecraft, parent) -> AutoConfig.getConfigScreen(SloConfig.class, parent).get()));
     }
 }

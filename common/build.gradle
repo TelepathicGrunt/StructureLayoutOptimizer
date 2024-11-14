@@ -18,7 +18,9 @@ dependencies {
     compileOnly "io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}"
     annotationProcessor "io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}"
 
-    compileOnly "com.teamresourceful.resourcefulconfig:resourcefulconfig-common-${project.resourceful_config_minecraft_version}:${project.resourceful_config_version}"
+    modCompileOnly("me.shedaniel.cloth:cloth-config:${project.cloth_config_version}") {
+        exclude group: 'net.fabricmc'
+    }
 }
 
 loom {

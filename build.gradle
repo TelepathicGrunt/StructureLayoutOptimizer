@@ -27,7 +27,7 @@ subprojects {
     project.version = rootProject.version
 
     repositories {
-        maven { url = 'https://maven.teamresourceful.com/repository/maven-releases' }
+        maven { url "https://maven.shedaniel.me" }
         exclusiveContent {
             forRepository {
                 maven {
