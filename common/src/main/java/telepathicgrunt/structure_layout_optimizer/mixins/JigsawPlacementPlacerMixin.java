@@ -7,13 +7,12 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -32,6 +31,7 @@ import telepathicgrunt.structure_layout_optimizer.utils.TrojanVoxelShape;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Mixin(targets = "net.minecraft.world.level.levelgen.structure.pools.JigsawPlacement$Placer")
 public class JigsawPlacementPlacerMixin {
@@ -83,15 +83,15 @@ public class JigsawPlacementPlacerMixin {
 
     @Final
     @Shadow
-    private RandomSource random;
+    private Random random;
 
     @Final
     @Shadow
-    private StructureTemplateManager structureTemplateManager;
+    private StructureManager structureManager;
 
     @Redirect(method = "tryPlacingChildren",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/levelgen/structure/pools/StructureTemplatePool;getShuffledTemplates(Lnet/minecraft/util/RandomSource;)Ljava/util/List;", ordinal = 0))
-    private List<StructurePoolElement> structureLayoutOptimizer$removeDuplicateTemplatePoolElementLists(StructureTemplatePool instance, RandomSource random) {
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/levelgen/structure/pools/StructureTemplatePool;getShuffledTemplates(Ljava/util/Random;)Ljava/util/List;", ordinal = 0))
+    private List<StructurePoolElement> structureLayoutOptimizer$removeDuplicateTemplatePoolElementLists(StructureTemplatePool instance, Random random) {
         if (!StructureLayoutOptimizerMod.getConfig().deduplicateShuffledTemplatePoolElementList) {
             return instance.getShuffledTemplates(random);
         }
@@ -125,7 +125,7 @@ public class JigsawPlacementPlacerMixin {
 
     @ModifyExpressionValue(
             method = "tryPlacingChildren",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/Rotation;getShuffled(Lnet/minecraft/util/RandomSource;)Ljava/util/List;", ordinal = 0))
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/Rotation;getShuffled(Ljava/util/Random;)Ljava/util/List;", ordinal = 0))
     private List<Rotation> structureLayoutOptimizer$skipDuplicateTemplatePoolElementLists2(List<Rotation> original,
                                                                                            @Local(ordinal = 0) List<StructurePoolElement> list,
                                                                                            @Local(ordinal = 1) StructurePoolElement structurepoolelement1)
@@ -137,7 +137,7 @@ public class JigsawPlacementPlacerMixin {
                 // Prime the random with the random calls we would've skipped.
                 // Maintains vanilla compat.
                 for (Rotation rotation1 : Rotation.getShuffled(this.random)) {
-                    structurepoolelement1.getShuffledJigsawBlocks(this.structureTemplateManager, BlockPos.ZERO, rotation1, this.random);
+                    structurepoolelement1.getShuffledJigsawBlocks(this.structureManager, BlockPos.ZERO, rotation1, this.random);
                 }
 
                 // Short circuit the Rotation loop
