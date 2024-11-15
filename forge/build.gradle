@@ -2,10 +2,12 @@ plugins {
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
     id 'org.spongepowered.mixin' version '0.7-SNAPSHOT'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 configurations {
     runtimeClasspath.extendsFrom localRuntime
+    shade
 }
 
 repositories {
@@ -21,13 +23,13 @@ dependencies {
     annotationProcessor 'net.fabricmc:sponge-mixin:0.13.0+mixin.0.8.5'
     annotationProcessor "io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}"
     minecraftLibrary "io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}"
-    // TODO shadow
+    shade "io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}"
 
     implementation fg.deobf("me.shedaniel.cloth:cloth-config-forge:${project.cloth_config_version}")
 }
 
 publishMods {
-    file = tasks.jar.archiveFile
+    file = tasks.shadowJar.archiveFile
     modLoaders.add("forge")
 
     def uploadDependenciesCf = [
@@ -144,13 +146,31 @@ processResources {
 }
 
 jar {
-    finalizedBy('reobfJar')
+    archiveClassifier.set('slim')
     manifest {
         attributes([
                 "MixinConfigs": "${project.mod_id}.mixins.json"
         ])
     }
 }
+
+reobf {
+    shadowJar {}
+}
+
+shadowJar {
+    configurations = [project.configurations.shade]
+    relocate("com.llamalad7.mixinextras", "telepathicgrunt.structure_layout_optimizer.forge.shadow.mixinextras")
+    mergeServiceFiles()
+
+    archiveClassifier.set('')
+    manifest {
+        inheritFrom jar.manifest
+    }
+
+    finalizedBy 'reobfShadowJar'
+}
+tasks.assemble.dependsOn shadowJar
 
 publishing {
     publications {
