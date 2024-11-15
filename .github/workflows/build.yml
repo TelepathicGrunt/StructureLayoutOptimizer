@@ -7,8 +7,8 @@ on:
   pull_request:
 
 env:
-  JAVA_VERSION: 8
-  JVM_VENDOR: 'temurin'
+  JAVA_VERSION: 21
+  JVM_VENDOR: 'microsoft'
 
 jobs:
   build:
