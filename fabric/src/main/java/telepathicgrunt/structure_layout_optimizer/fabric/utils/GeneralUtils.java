@@ -1,8 +1,9 @@
-package telepathicgrunt.structure_layout_optimizer.utils;
+package telepathicgrunt.structure_layout_optimizer.fabric.utils;
 
 import net.minecraft.core.FrontAndTop;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.block.JigsawBlock;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
@@ -31,6 +32,7 @@ public final class GeneralUtils {
 
     // From Thailkil by reducing grabbing of the entry by half
     public static String getStringMicroOptimised(CompoundTag tag, String key) {
-        return tag.get(key) instanceof StringTag stringTag ? stringTag.getAsString() : "";
+        Tag value = tag.get(key);
+        return value instanceof StringTag ? value.getAsString() : "";
     }
 }

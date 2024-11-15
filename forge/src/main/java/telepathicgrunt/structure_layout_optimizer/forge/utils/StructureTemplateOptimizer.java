@@ -1,11 +1,11 @@
-package telepathicgrunt.structure_layout_optimizer.utils;
+package telepathicgrunt.structure_layout_optimizer.forge.utils;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.Mirror;
-import net.minecraft.world.level.block.Rotation;
-import net.minecraft.world.level.levelgen.structure.BoundingBox;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.util.Mirror;
+import net.minecraft.util.Rotation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MutableBoundingBox;
+import net.minecraft.world.gen.feature.template.PlacementSettings;
+import net.minecraft.world.gen.feature.template.Template;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -13,8 +13,8 @@ import java.util.List;
 
 public class StructureTemplateOptimizer {
 
-    public static @NotNull List<StructureTemplate.StructureBlockInfo> getStructureBlockInfosInBounds(StructureTemplate.Palette instance, BlockPos offset, StructurePlaceSettings structurePlaceSettings) {
-        BoundingBox boundingBox = structurePlaceSettings.getBoundingBox();
+    public static @NotNull List<Template.BlockInfo> getStructureBlockInfosInBounds(Template.Palette instance, BlockPos offset, PlacementSettings structurePlaceSettings) {
+        MutableBoundingBox boundingBox = structurePlaceSettings.getBoundingBox();
         if (boundingBox == null) {
             return instance.blocks();
         }
@@ -23,10 +23,10 @@ public class StructureTemplateOptimizer {
         Rotation rotation = structurePlaceSettings.getRotation();
         BlockPos pivot = structurePlaceSettings.getRotationPivot();
 
-        List<StructureTemplate.StructureBlockInfo> list = new ArrayList<>();
-        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+        List<Template.BlockInfo> list = new ArrayList<>();
+        BlockPos.Mutable mutableBlockPos = new BlockPos.Mutable();
 
-        for (StructureTemplate.StructureBlockInfo blockInfo : instance.blocks()) {
+        for (Template.BlockInfo blockInfo : instance.blocks()) {
             mutableBlockPos.set(blockInfo.pos);
             transform(mutableBlockPos, mirror, rotation, pivot);
             mutableBlockPos.move(offset);
@@ -39,7 +39,7 @@ public class StructureTemplateOptimizer {
         return list;
     }
 
-    private static void transform(BlockPos.MutableBlockPos mutableBlockPos, Mirror mirror, Rotation rotation, BlockPos pivot) {
+    private static void transform(BlockPos.Mutable mutableBlockPos, Mirror mirror, Rotation rotation, BlockPos pivot) {
         int i = mutableBlockPos.getX();
         int j = mutableBlockPos.getY();
         int k = mutableBlockPos.getZ();

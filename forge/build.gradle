@@ -3,7 +3,6 @@ plugins {
     id 'org.spongepowered.mixin' version '0.7-SNAPSHOT'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
-jarJar.enable()
 
 configurations {
     runtimeClasspath.extendsFrom localRuntime
@@ -21,16 +20,14 @@ dependencies {
 
     annotationProcessor 'net.fabricmc:sponge-mixin:0.13.0+mixin.0.8.5'
     annotationProcessor "io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}"
-    compileOnly("io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}")
-    minecraftEmbed("io.github.llamalad7:mixinextras-forge:${project.mixin_extras_version}") {
-        jarJar.ranged(it, "[${project.mixin_extras_version},)")
-    }
+    minecraftLibrary "io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}"
+    // TODO shadow
 
     implementation fg.deobf("me.shedaniel.cloth:cloth-config-forge:${project.cloth_config_version}")
 }
 
 publishMods {
-    file = tasks.jarJar.archiveFile
+    file = tasks.jar.archiveFile
     modLoaders.add("forge")
 
     def uploadDependenciesCf = [
@@ -75,6 +72,7 @@ publishMods {
         }
     }
 }
+tasks.publishMods.dependsOn('reobfJar')
 
 mixin {
     add(sourceSets.main, "${mod_id}.refmap.json")
@@ -146,20 +144,18 @@ processResources {
 }
 
 jar {
-    archiveClassifier.set("slim")
     finalizedBy('reobfJar')
-}
-
-tasks.named('jarJar', AbstractArchiveTask).configure {
-    archiveClassifier.set('')
-    finalizedBy('reobfJarJar')
+    manifest {
+        attributes([
+                "MixinConfigs": "${project.mod_id}.mixins.json"
+        ])
+    }
 }
 
 publishing {
     publications {
         "mavenJava${project.name}"(MavenPublication) {
             fg.component(it)
-            jarJar.component(it)
         }
     }
 }

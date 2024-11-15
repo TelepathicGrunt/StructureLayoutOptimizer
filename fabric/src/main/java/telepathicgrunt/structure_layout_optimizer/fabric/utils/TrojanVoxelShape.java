@@ -1,4 +1,4 @@
-package telepathicgrunt.structure_layout_optimizer.utils;
+package telepathicgrunt.structure_layout_optimizer.fabric.utils;
 
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import net.minecraft.core.Direction;
@@ -9,7 +9,7 @@ public class TrojanVoxelShape extends VoxelShape {
     public final BoxOctree boxOctree;
 
     public TrojanVoxelShape(BoxOctree boxOctree) {
-        super(BitSetDiscreteVoxelShape.withFilledBounds(0 ,0, 0, 0, 0, 0, 0, 0, 0));
+        super(new BitSetDiscreteVoxelShape(0 ,0, 0, 0, 0, 0, 0, 0, 0));
         this.boxOctree = boxOctree;
     }
 

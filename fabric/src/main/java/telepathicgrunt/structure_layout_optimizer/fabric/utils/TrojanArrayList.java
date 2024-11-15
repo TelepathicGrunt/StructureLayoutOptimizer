@@ -1,6 +1,6 @@
-package telepathicgrunt.structure_layout_optimizer.utils;
+package telepathicgrunt.structure_layout_optimizer.fabric.utils;
 
-import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
+import net.minecraft.world.level.levelgen.feature.structures.StructurePoolElement;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;

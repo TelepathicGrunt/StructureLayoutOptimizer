@@ -7,8 +7,8 @@ on:
   pull_request:
 
 env:
-  JAVA_VERSION: 17
-  JVM_VENDOR: 'microsoft'
+  JAVA_VERSION: 8
+  JVM_VENDOR: 'oracle'
 
 jobs:
   build:

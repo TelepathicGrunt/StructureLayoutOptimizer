@@ -6,7 +6,7 @@ plugins {
     id 'net.neoforged.moddev' version '2.0.43-beta' apply false
 }
 
-def javaVersion = 17
+def javaVersion = 8
 
 def ENV = System.getenv()
 version = mod_version
@@ -82,13 +82,8 @@ subprojects {
     }
 
     java {
-        if (JavaVersion.current() < JavaVersion.toVersion(javaVersion)) {
-            toolchain {
-                languageVersion = JavaLanguageVersion.of(javaVersion)
-            }
-        } else {
-            sourceCompatibility = JavaVersion.toVersion(javaVersion)
-            targetCompatibility = JavaVersion.toVersion(javaVersion)
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(javaVersion)
         }
 
         withSourcesJar()
@@ -119,7 +114,7 @@ subprojects {
     }
 
     tasks.withType(JavaCompile).configureEach {
-        options.release.set(javaVersion)
+        options.encoding = 'UTF-8'
     }
 
     tasks.publishMods.mustRunAfter tasks.publish

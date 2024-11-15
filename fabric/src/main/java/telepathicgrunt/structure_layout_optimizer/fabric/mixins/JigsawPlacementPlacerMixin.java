@@ -1,4 +1,4 @@
-package telepathicgrunt.structure_layout_optimizer.mixins;
+package telepathicgrunt.structure_layout_optimizer.fabric.mixins;
 
 import com.google.common.collect.Lists;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
@@ -8,9 +8,10 @@ import com.llamalad7.mixinextras.sugar.Local;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.levelgen.feature.structures.JigsawPlacement;
+import net.minecraft.world.level.levelgen.feature.structures.StructurePoolElement;
+import net.minecraft.world.level.levelgen.feature.structures.StructureTemplatePool;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
-import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
-import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.AABB;
@@ -24,23 +25,22 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import telepathicgrunt.structure_layout_optimizer.StructureLayoutOptimizerMod;
-import telepathicgrunt.structure_layout_optimizer.utils.BoxOctree;
-import telepathicgrunt.structure_layout_optimizer.utils.GeneralUtils;
-import telepathicgrunt.structure_layout_optimizer.utils.TrojanArrayList;
-import telepathicgrunt.structure_layout_optimizer.utils.TrojanVoxelShape;
+import telepathicgrunt.structure_layout_optimizer.fabric.utils.BoxOctree;
+import telepathicgrunt.structure_layout_optimizer.fabric.utils.GeneralUtils;
+import telepathicgrunt.structure_layout_optimizer.fabric.utils.TrojanArrayList;
+import telepathicgrunt.structure_layout_optimizer.fabric.utils.TrojanVoxelShape;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-@Mixin(targets = "net.minecraft.world.level.levelgen.structure.pools.JigsawPlacement$Placer")
+@Mixin(JigsawPlacement.Placer.class)
 public class JigsawPlacementPlacerMixin {
 
     @Redirect(method = "tryPlacingChildren",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/JigsawBlock;canAttach(Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate$StructureBlockInfo;Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate$StructureBlockInfo;)Z"))
     private boolean structureLayoutOptimizer$optimizeJigsawConnecting(StructureTemplate.StructureBlockInfo jigsaw1, StructureTemplate.StructureBlockInfo jigsaw2) {
         return GeneralUtils.canJigsawsAttach(jigsaw1, jigsaw2);
-        // accessible method net/minecraft/world/level/block/JigsawBlock canAttach (Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate$StructureBlockInfo;Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate$StructureBlockInfo;)Z
     }
 
     ////////////////////////////////
@@ -48,11 +48,11 @@ public class JigsawPlacementPlacerMixin {
     @WrapOperation(method = "tryPlacingChildren",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/shapes/Shapes;joinIsNotEmpty(Lnet/minecraft/world/phys/shapes/VoxelShape;Lnet/minecraft/world/phys/shapes/VoxelShape;Lnet/minecraft/world/phys/shapes/BooleanOp;)Z"))
     private boolean structureLayoutOptimizer$replaceVoxelShape2(VoxelShape parentBounds, VoxelShape pieceShape, BooleanOp booleanOp, Operation<Boolean> original, @Local(ordinal = 3) BoundingBox pieceBounds) {
-        if (parentBounds instanceof TrojanVoxelShape trojanVoxelShape) {
+        if (parentBounds instanceof TrojanVoxelShape) {
             AABB pieceAABB = AABB.of(pieceBounds).deflate(0.25D);
 
             // Have to inverse because of an ! outside our wrap
-            return !trojanVoxelShape.boxOctree.withinBoundsButNotIntersectingChildren(pieceAABB);
+            return !((TrojanVoxelShape) parentBounds).boxOctree.withinBoundsButNotIntersectingChildren(pieceAABB);
         }
 
         return original.call(parentBounds, pieceShape, booleanOp);
@@ -68,8 +68,9 @@ public class JigsawPlacementPlacerMixin {
     @Redirect(method = "tryPlacingChildren",
             at = @At(value = "INVOKE", target = "Lorg/apache/commons/lang3/mutable/MutableObject;setValue(Ljava/lang/Object;)V", ordinal = 1))
     private void structureLayoutOptimizer$replaceVoxelShape4(MutableObject<VoxelShape> instance, Object value, @Local(ordinal = 3) BoundingBox pieceBounds) {
-        if (instance.getValue() instanceof TrojanVoxelShape trojanVoxelShape) {
-            trojanVoxelShape.boxOctree.addBox(AABB.of(pieceBounds));
+        VoxelShape shape = instance.getValue();
+        if (shape instanceof TrojanVoxelShape) {
+            ((TrojanVoxelShape) shape).boxOctree.addBox(AABB.of(pieceBounds));
         }
     }
 
@@ -90,14 +91,14 @@ public class JigsawPlacementPlacerMixin {
     private StructureManager structureManager;
 
     @Redirect(method = "tryPlacingChildren",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/levelgen/structure/pools/StructureTemplatePool;getShuffledTemplates(Ljava/util/Random;)Ljava/util/List;", ordinal = 0))
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/levelgen/feature/structures/StructureTemplatePool;getShuffledTemplates(Ljava/util/Random;)Ljava/util/List;", ordinal = 0))
     private List<StructurePoolElement> structureLayoutOptimizer$removeDuplicateTemplatePoolElementLists(StructureTemplatePool instance, Random random) {
         if (!StructureLayoutOptimizerMod.getConfig().deduplicateShuffledTemplatePoolElementList) {
             return instance.getShuffledTemplates(random);
         }
 
         // Linked hashset keeps order of elements.
-        var uniquePieces = new ObjectLinkedOpenHashSet<StructurePoolElement>(((StructureTemplatePoolAccessor)instance).getRawTemplates().size());
+        ObjectLinkedOpenHashSet<StructurePoolElement> uniquePieces = new ObjectLinkedOpenHashSet<>(((StructureTemplatePoolAccessor) instance).getRawTemplates().size());
 
         // Don't use addAll. Want to keep it simple in case of inefficiency in collection's addAll.
         // Set will ignore duplicates after first appearance of an element.
@@ -130,7 +131,8 @@ public class JigsawPlacementPlacerMixin {
                                                                                            @Local(ordinal = 0) List<StructurePoolElement> list,
                                                                                            @Local(ordinal = 1) StructurePoolElement structurepoolelement1)
     {
-        if (!StructureLayoutOptimizerMod.getConfig().deduplicateShuffledTemplatePoolElementList && list instanceof TrojanArrayList<StructurePoolElement> trojanArrayList) {
+        if (!StructureLayoutOptimizerMod.getConfig().deduplicateShuffledTemplatePoolElementList && list instanceof TrojanArrayList) {
+            TrojanArrayList<StructurePoolElement> trojanArrayList = (TrojanArrayList<StructurePoolElement>) list;
             // Do not run this piece's logic since we already checked its 4 rotations in the past.
             if (trojanArrayList.elementsAlreadyParsed.contains(structurepoolelement1)) {
 

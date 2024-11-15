@@ -1,7 +1,8 @@
 {
   "required": true,
-  "package": "telepathicgrunt.structure_layout_optimizer.mixins",
+  "package": "telepathicgrunt.structure_layout_optimizer.forge.mixins",
   "refmap": "${mod_id}.refmap.json",
+  "plugin": "telepathicgrunt.structure_layout_optimizer.forge.utils.SloMixinConfigPlugin",
   "compatibilityLevel": "JAVA_${java_version}",
   "mixins": [
     "JigsawPlacementMixin",
