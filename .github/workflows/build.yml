@@ -8,7 +8,7 @@ on:
 
 env:
   JAVA_VERSION: 8
-  JVM_VENDOR: 'oracle'
+  JVM_VENDOR: 'temurin'
 
 jobs:
   build:
