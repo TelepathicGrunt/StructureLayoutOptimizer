@@ -148,6 +148,12 @@ processResources {
 jar {
     archiveClassifier.set("slim")
     finalizedBy('reobfJar')
+
+    manifest {
+        attributes([
+                "MixinConfigs": "${project.mod_id}.mixins.json"
+        ])
+    }
 }
 
 tasks.named('jarJar', AbstractArchiveTask).configure {

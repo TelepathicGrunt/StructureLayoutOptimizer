@@ -14,9 +14,6 @@ logoBlur=false
 authors="TelepathicGrunt"
 description='''${mod_description}'''
 
-[[mixins]]
-config="structure_layout_optimizer.mixins.json"
-
 [dependencies]
 "${mod_id}" = [
     { modId = "forge", mandatory = true, versionRange = "[40.2.0,)", ordering = "NONE", side = "BOTH" },
