@@ -16,7 +16,7 @@ description='''${mod_description}'''
 
 [dependencies]
 "${mod_id}" = [
-    { modId = "forge", mandatory = true, versionRange = "[40.2.0,)", ordering = "NONE", side = "BOTH" },
+    { modId = "forge", mandatory = true, versionRange = "[40.2.21,)", ordering = "NONE", side = "BOTH" },
     { modId = "minecraft", mandatory = true, versionRange = "[1.18.2,1.19)", ordering = "NONE", side = "BOTH" },
     { modId = "cloth_config", mandatory = true, versionRange = "*", ordering = "NONE", side = "BOTH" },
 ]
