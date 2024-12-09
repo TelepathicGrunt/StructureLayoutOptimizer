@@ -1,1 +1,1 @@
-Added optimization for high weight template pools. Also comes with a `deduplicateShuffledTemplatePoolElementList` option you can set to true for a bit more performance at the cost of losing vanilla seed parity with structure layouts.
+Updated to 1.21.4

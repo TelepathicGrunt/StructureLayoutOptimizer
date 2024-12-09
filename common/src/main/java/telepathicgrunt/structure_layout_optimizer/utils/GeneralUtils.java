@@ -24,17 +24,17 @@ public final class GeneralUtils {
     }
 
     // More optimized with checking if the jigsaw blocks can connect
-    public static boolean canJigsawsAttach(StructureTemplate.StructureBlockInfo jigsaw1, StructureTemplate.StructureBlockInfo jigsaw2) {
-        FrontAndTop prop1 = jigsaw1.state().getValue(JigsawBlock.ORIENTATION);
-        FrontAndTop prop2 = jigsaw2.state().getValue(JigsawBlock.ORIENTATION);
+    public static boolean canJigsawsAttach(StructureTemplate.JigsawBlockInfo jigsaw1, StructureTemplate.JigsawBlockInfo jigsaw2) {
+        FrontAndTop prop1 = jigsaw1.info().state().getValue(JigsawBlock.ORIENTATION);
+        FrontAndTop prop2 = jigsaw2.info().state().getValue(JigsawBlock.ORIENTATION);
 
         return prop1.front() == prop2.front().getOpposite() &&
                 (prop1.top() == prop2.top() || isRollableJoint(jigsaw1, prop1)) &&
-                getStringMicroOptimised(jigsaw1.nbt(), "target").equals(getStringMicroOptimised(jigsaw2.nbt(), "name"));
+                getStringMicroOptimised(jigsaw1.info().nbt(), "target").equals(getStringMicroOptimised(jigsaw2.info().nbt(), "name"));
     }
 
-    private static boolean isRollableJoint(StructureTemplate.StructureBlockInfo jigsaw1, FrontAndTop prop1) {
-        String joint = getStringMicroOptimised(jigsaw1.nbt(), "joint");
+    private static boolean isRollableJoint(StructureTemplate.JigsawBlockInfo jigsaw1, FrontAndTop prop1) {
+        String joint = getStringMicroOptimised(jigsaw1.info().nbt(), "joint");
         if(!joint.equals("rollable") && !joint.equals("aligned")) {
             return !prop1.front().getAxis().isHorizontal();
         }
@@ -43,21 +43,21 @@ public final class GeneralUtils {
         }
     }
 
-    public static void shuffleAndPrioritize(List<StructureTemplate.StructureBlockInfo> list, RandomSource random) {
-        Int2ObjectArrayMap<List<StructureTemplate.StructureBlockInfo>> buckets = new Int2ObjectArrayMap<>();
+    public static void shuffleAndPrioritize(List<StructureTemplate.JigsawBlockInfo> list, RandomSource random) {
+        Int2ObjectArrayMap<List<StructureTemplate.JigsawBlockInfo>> buckets = new Int2ObjectArrayMap<>();
 
         // Add entries to the bucket
-        for (StructureTemplate.StructureBlockInfo structureBlockInfo : list) {
+        for (StructureTemplate.JigsawBlockInfo structureBlockInfo : list) {
             int key = 0;
-            if (structureBlockInfo.nbt() != null) {
-                key = getIntMicroOptimised(structureBlockInfo.nbt(), "selection_priority");
+            if (structureBlockInfo.info().nbt() != null) {
+                key = getIntMicroOptimised(structureBlockInfo.info().nbt(), "selection_priority");
             }
 
             buckets.computeIfAbsent(key, k -> new ArrayList<>()).add(structureBlockInfo);
         }
 
         // Shuffle the entries in the bucket
-        for (List<StructureTemplate.StructureBlockInfo> bucketList : buckets.values()) {
+        for (List<StructureTemplate.JigsawBlockInfo> bucketList : buckets.values()) {
             Util.shuffle(bucketList, random);
         }
 

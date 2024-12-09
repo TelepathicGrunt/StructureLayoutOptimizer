@@ -42,13 +42,12 @@ dependencies {
 
 publishMods {
     modLoaders.add("fabric")
-    modLoaders.add("quilt")
 
     def uploadDependenciesCf = [
-            '714059': true // resourceful config
+            'resourceful-config': true
     ]
     def uploadDependenciesMr = [
-            'M1953qlQ': true // resourceful config
+            'resourceful-config': true
     ]
 
     if (project.hasProperty('curseforge_id')) {

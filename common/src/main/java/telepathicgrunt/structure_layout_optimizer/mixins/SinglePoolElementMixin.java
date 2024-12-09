@@ -16,13 +16,13 @@ public class SinglePoolElementMixin {
     @Redirect(
             method = "getShuffledJigsawBlocks(Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplateManager;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/Rotation;Lnet/minecraft/util/RandomSource;)Ljava/util/List;",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/Util;shuffle(Ljava/util/List;Lnet/minecraft/util/RandomSource;)V"))
-    private void structureLayoutOptimizer$fasterJigsawListShuffling1(List<StructureTemplate.StructureBlockInfo> list, RandomSource randomSource) {
+    private void structureLayoutOptimizer$fasterJigsawListShuffling1(List<StructureTemplate.JigsawBlockInfo> list, RandomSource randomSource) {
         GeneralUtils.shuffleAndPrioritize(list, randomSource);
     }
 
     @Redirect(
             method = "getShuffledJigsawBlocks(Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplateManager;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/Rotation;Lnet/minecraft/util/RandomSource;)Ljava/util/List;",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/levelgen/structure/pools/SinglePoolElement;sortBySelectionPriority(Ljava/util/List;)V"))
-    private void structureLayoutOptimizer$fasterJigsawListShuffling2(List<StructureTemplate.StructureBlockInfo> structureBlockInfos) {}
+    private void structureLayoutOptimizer$fasterJigsawListShuffling2(List<StructureTemplate.JigsawBlockInfo> structureBlockInfos) {}
 }
 
