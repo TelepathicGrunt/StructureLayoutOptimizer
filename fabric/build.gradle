@@ -41,6 +41,7 @@ dependencies {
 }
 
 publishMods {
+    file = tasks.remapJar.archiveFile
     modLoaders.add("fabric")
 
     def uploadDependenciesCf = [
