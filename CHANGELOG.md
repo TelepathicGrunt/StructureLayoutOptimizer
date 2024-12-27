@@ -1,1 +1,1 @@
-Fixed fabric crash
+Added thread safety to the processor optimizations, so it works better with C2ME. (PR'ed by ishland)
