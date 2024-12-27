@@ -63,7 +63,7 @@ public final class GeneralUtils {
 
         if (buckets.size() == 1) {
             list.clear();
-            copyAll(buckets.get(0), list);
+            copyAll(buckets.int2ObjectEntrySet().fastIterator().next().getValue(), list);
         }
         else if (buckets.size() > 1) {
             // Priorities found. Concat them into a single new master list in reverse order to match vanilla behavior
