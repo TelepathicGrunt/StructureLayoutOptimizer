@@ -2,6 +2,7 @@ package telepathicgrunt.structure_layout_optimizer.forge.utils;
 
 
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3i;
 import telepathicgrunt.structure_layout_optimizer.StructureLayoutOptimizerMod;
 
@@ -149,6 +150,29 @@ public class BoxOctree {
         else {
             for (AxisAlignedBB innerBox : innerBoxes) {
                 if (innerBox.intersects(axisAlignedBB)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public boolean boundaryContains(BlockPos position) {
+        return boundary.contains(position.getX(), position.getY(), position.getZ());
+    }
+
+    public boolean withinAnyBox(BlockPos position) {
+        if (!childrenOctants.isEmpty()) {
+            for (BoxOctree octree : childrenOctants) {
+                if (octree.boundaryContains(position) && octree.withinAnyBox(position)) {
+                    return true;
+                }
+            }
+        }
+        else {
+            for (AxisAlignedBB innerBox : innerBoxes) {
+                if (innerBox.contains(position.getX(), position.getY(), position.getZ())) {
                     return true;
                 }
             }

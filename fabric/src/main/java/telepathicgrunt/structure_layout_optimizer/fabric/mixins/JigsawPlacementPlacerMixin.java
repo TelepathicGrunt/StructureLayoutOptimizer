@@ -45,17 +45,18 @@ public class JigsawPlacementPlacerMixin {
 
     ////////////////////////////////
 
-    @ModifyExpressionValue(method = "tryPlacingChildren(Lnet/minecraft/world/level/levelgen/structure/PoolElementStructurePiece;Lorg/apache/commons/lang3/mutable/MutableObject;IZLnet/minecraft/world/level/LevelHeightAccessor;Lnet/minecraft/world/level/levelgen/RandomState;Lnet/minecraft/world/level/levelgen/structure/pools/alias/PoolAliasLookup;Lnet/minecraft/world/level/levelgen/structure/templatesystem/LiquidSettings;)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/levelgen/structure/pools/StructurePoolElement;getShuffledJigsawBlocks(Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplateManager;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/Rotation;Lnet/minecraft/util/RandomSource;)Ljava/util/List;", ordinal = 1))
-    private List<StructureTemplate.JigsawBlockInfo> structureLayoutOptimizer$skipBlockedJigsaws(
-                                                        List<StructureTemplate.JigsawBlockInfo> original,
+    @ModifyExpressionValue(method = "tryPlacingChildren",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/levelgen/feature/structures/StructurePoolElement;getShuffledJigsawBlocks(Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureManager;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/Rotation;Ljava/util/Random;)Ljava/util/List;", ordinal = 1))
+    private List<StructureTemplate.StructureBlockInfo> structureLayoutOptimizer$skipBlockedJigsaws(
+                                                        List<StructureTemplate.StructureBlockInfo> original,
                                                         @Local(ordinal = 0, argsOnly = true) boolean useExpansionHack,
                                                         @Local(ordinal = 2) MutableObject<VoxelShape> voxelShapeMutableObject,
                                                         @Local(ordinal = 1) StructurePoolElement structurePoolElement,
-                                                        @Local(ordinal = 0) StructureTemplate.JigsawBlockInfo parentJigsawBlockInfo,
+                                                        @Local(ordinal = 0) StructureTemplate.StructureBlockInfo parentJigsawBlockInfo,
                                                         @Local(ordinal = 2) BlockPos parentTargetPosition)
     {
-        if (voxelShapeMutableObject.getValue() instanceof TrojanVoxelShape trojanVoxelShape) {
+        if (voxelShapeMutableObject.getValue() instanceof TrojanVoxelShape) {
+            TrojanVoxelShape trojanVoxelShape = ((TrojanVoxelShape) voxelShapeMutableObject.getValue());
             // If rigid and target position is already an invalid spot, do not run rest of logic.
             StructureTemplatePool.Projection candidatePlacementBehavior = structurePoolElement.getProjection();
             boolean isCandidateRigid = candidatePlacementBehavior == StructureTemplatePool.Projection.RIGID;

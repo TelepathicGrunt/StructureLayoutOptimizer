@@ -42,6 +42,30 @@ public class JigsawPlacementPlacerMixin {
         return GeneralUtils.canJigsawsAttach(jigsaw1, jigsaw2);
     }
 
+    ////////////////////////////////
+
+    @ModifyExpressionValue(method = "tryPlacingChildren",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/gen/feature/jigsaw/JigsawPiece;getShuffledJigsawBlocks(Lnet/minecraft/world/gen/feature/template/TemplateManager;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/Rotation;Ljava/util/Random;)Ljava/util/List;", ordinal = 1))
+    private List<Template.BlockInfo> structureLayoutOptimizer$skipBlockedJigsaws(
+            List<Template.BlockInfo> original,
+            @Local(ordinal = 0, argsOnly = true) boolean useExpansionHack,
+            @Local(ordinal = 2) MutableObject<VoxelShape> voxelShapeMutableObject,
+            @Local(ordinal = 1) JigsawPiece structurePoolElement,
+            @Local(ordinal = 0) Template.BlockInfo parentJigsawBlockInfo,
+            @Local(ordinal = 2) BlockPos parentTargetPosition)
+    {
+        if (voxelShapeMutableObject.getValue() instanceof TrojanVoxelShape) {
+            TrojanVoxelShape trojanVoxelShape = ((TrojanVoxelShape) voxelShapeMutableObject.getValue());
+            // If rigid and target position is already an invalid spot, do not run rest of logic.
+            JigsawPattern.PlacementBehaviour candidatePlacementBehavior = structurePoolElement.getProjection();
+            boolean isCandidateRigid = candidatePlacementBehavior == JigsawPattern.PlacementBehaviour.RIGID;
+            if (isCandidateRigid && (!trojanVoxelShape.boxOctree.boundaryContains(parentTargetPosition) || trojanVoxelShape.boxOctree.withinAnyBox(parentTargetPosition))) {
+                return new ArrayList<>();
+            }
+        }
+        return original;
+    }
+
     /// /////////////////////////////
 
     @WrapOperation(method = "tryPlacingChildren", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/shapes/VoxelShapes;joinIsNotEmpty(Lnet/minecraft/util/math/shapes/VoxelShape;Lnet/minecraft/util/math/shapes/VoxelShape;Lnet/minecraft/util/math/shapes/IBooleanFunction;)Z"))
