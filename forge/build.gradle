@@ -1,9 +1,5 @@
 plugins {
-    id 'net.neoforged.moddev' version '2.0.65-beta' apply false
-}
-
-configurations {
-    runtimeClasspath.extendsFrom localRuntime
+    id 'net.neoforged.moddev.legacyforge' version '2.0.65-beta'
 }
 
 repositories {
@@ -17,17 +13,15 @@ dependencies {
 
     annotationProcessor 'net.fabricmc:sponge-mixin:0.13.0+mixin.0.8.5'
     annotationProcessor "io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}"
-    additionalRuntimeClasspath("io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}")
+    compileOnly("io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}")
     implementation("io.github.llamalad7:mixinextras-forge:${project.mixin_extras_version}")
-    jarJar("io.github.llamalad7:mixinextras-forge:${project.mixin_extras_version}") {
-        jarJar.ranged(it, "[${project.mixin_extras_version},)")
-    }
+    jarJar("io.github.llamalad7:mixinextras-forge:${project.mixin_extras_version}")
 
     modImplementation "com.teamresourceful.resourcefulconfig:resourcefulconfig-forge-${project.resourceful_config_minecraft_version}:${project.resourceful_config_version}"
 }
 
 publishMods {
-    file = tasks.jarJar.archiveFile
+    file = tasks.jar.archiveFile
     modLoaders.add("forge")
 
     File changeLog = rootProject.file("CHANGELOG.md")
@@ -85,48 +79,27 @@ mixin {
 }
 
 legacyForge {
-    forgeVersion = "${project.minecraft_version}-${project.forge_version}"
-    mappings channel: 'parchment', version: "${project.parchment_mappings_version}-${project.parchment_minecraft_version}"
-
-    copyIdeResources = true //Calls processResources when in dev
-
-    // Automatically enable forge AccessTransformers if the file exists
-    // This location is hardcoded in Forge and can not be changed.
-    // https://github.com/MinecraftForge/MinecraftForge/blob/be1698bb1554f9c8fa2f58e32b9ab70bc4385e60/fmlloader/src/main/java/net/minecraftforge/fml/loading/moddiscovery/ModFile.java#L123
-    def atFile = project.file('src/main/resources/META-INF/accesstransformer.cfg')
-    if (atFile.exists()) {
-        accessTransformer = atFile
-    }
+    version = "${project.minecraft_version}-${project.forge_version}"
 
     runs {
         client {
-            workingDirectory project.file('run')
-            ideaModule "${rootProject.name}.${project.name}.main"
-            taskName 'Client'
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', project.layout.buildDirectory.get().file('createSrgToMcp/output.srg').asFile.absolutePath
-            property 'forge.logging.markers', 'REGISTRIES'
-            mods {
-                modClientRun {
-                    source sourceSets.main
-                    source project(":common").sourceSets.main
-                }
-            }
+            client()
+            systemProperty 'mixin.env.remapRefMap', 'true'
+            systemProperty 'mixin.env.refMapRemappingFile', project.layout.buildDirectory.get().file('createSrgToMcp/output.srg').asFile.absolutePath
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
         }
 
         server {
-            workingDirectory project.file('run')
-            ideaModule "${rootProject.name}.${project.name}.main"
-            taskName 'Server'
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', project.layout.buildDirectory.get().file('createSrgToMcp/output.srg').asFile.absolutePath
-            property 'forge.logging.markers', 'REGISTRIES'
-            mods {
-                modServerRun {
-                    source sourceSets.main
-                    source project(":common").sourceSets.main
-                }
-            }
+            server()
+            systemProperty 'mixin.env.remapRefMap', 'true'
+            systemProperty 'mixin.env.refMapRemappingFile', project.layout.buildDirectory.get().file('createSrgToMcp/output.srg').asFile.absolutePath
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+        }
+    }
+    mods {
+        modServerRun {
+            sourceSet sourceSets.main
+            sourceSet project(":common").sourceSets.main
         }
     }
 }
@@ -148,9 +121,6 @@ processResources {
 }
 
 jar {
-    archiveClassifier.set("slim")
-    finalizedBy('reobfJar')
-
     manifest {
         attributes([
                 "MixinConfigs": "${project.mod_id}.mixins.json"
@@ -158,16 +128,10 @@ jar {
     }
 }
 
-tasks.named('jarJar', AbstractArchiveTask).configure {
-    archiveClassifier.set('')
-    finalizedBy('reobfJarJar')
-}
-
 publishing {
     publications {
-        "mavenJava${project.name}"(MavenPublication) {
-            fg.component(it)
-            jarJar.component(it)
+        "mavenJava"(MavenPublication) {
+            from components.java
         }
     }
 }
