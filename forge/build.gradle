@@ -1,5 +1,4 @@
 plugins {
-    id 'net.neoforged.moddev.legacyforge' version '2.0.65-beta'
     id 'org.spongepowered.mixin' version '0.7-SNAPSHOT'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
@@ -14,7 +13,6 @@ repositories {
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
     compileOnly(project(':common')) {
         transitive = false
     }

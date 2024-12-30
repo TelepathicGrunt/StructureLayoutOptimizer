@@ -3,7 +3,7 @@ plugins {
     id 'maven-publish'
     id 'me.modmuss50.mod-publish-plugin' version '0.7.4' apply false
     id 'fabric-loom' version '1.8-SNAPSHOT' apply false
-    id 'net.neoforged.moddev' version '2.0.43-beta' apply false
+    id 'net.neoforged.moddev' version '2.0.65-beta' apply false
 }
 
 def javaVersion = 17
