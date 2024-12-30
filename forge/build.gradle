@@ -1,5 +1,5 @@
 plugins {
-    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'net.neoforged.moddev.legacyforge' version '2.0.65-beta'
     id 'org.spongepowered.mixin' version '0.7-SNAPSHOT'
     id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
@@ -26,7 +26,7 @@ dependencies {
         jarJar.ranged(it, "[${project.mixin_extras_version},)")
     }
 
-    implementation fg.deobf("com.teamresourceful.resourcefulconfig:resourcefulconfig-forge-${project.resourceful_config_minecraft_version}:${project.resourceful_config_version}")
+    modImplementation "com.teamresourceful.resourcefulconfig:resourcefulconfig-forge-${project.resourceful_config_minecraft_version}:${project.resourceful_config_version}"
 }
 
 publishMods {
@@ -85,10 +85,10 @@ mixin {
     add(sourceSets.main, "${mod_id}.refmap.json")
 
     config("${mod_id}.mixins.json")
-//    config("${mod_id}.forge.mixins.json")
 }
 
-minecraft {
+legacyForge {
+    forgeVersion = "${project.minecraft_version}-${project.forge_version}"
     mappings channel: 'parchment', version: "${project.parchment_mappings_version}-${project.parchment_minecraft_version}"
 
     copyIdeResources = true //Calls processResources when in dev
