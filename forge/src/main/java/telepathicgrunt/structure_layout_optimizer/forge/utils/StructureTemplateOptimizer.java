@@ -13,30 +13,37 @@ import java.util.List;
 
 public class StructureTemplateOptimizer {
 
-    public static @NotNull List<Template.BlockInfo> getStructureBlockInfosInBounds(Template.Palette instance, BlockPos offset, PlacementSettings structurePlaceSettings) {
+    public static @NotNull List<Template.BlockInfo> getStructureBlockInfosInBounds(Template.Palette palette, BlockPos offset, PlacementSettings structurePlaceSettings) {
         MutableBoundingBox boundingBox = structurePlaceSettings.getBoundingBox();
+        List<Template.BlockInfo> originalPositions = palette.blocks();
         if (boundingBox == null) {
-            return instance.blocks();
+            return originalPositions;
         }
 
         Mirror mirror = structurePlaceSettings.getMirror();
         Rotation rotation = structurePlaceSettings.getRotation();
         BlockPos pivot = structurePlaceSettings.getRotationPivot();
 
-        List<Template.BlockInfo> list = new ArrayList<>();
+        List<Template.BlockInfo> listOfInBoundsRelativePositions = new ArrayList<>();
         BlockPos.Mutable mutableBlockPos = new BlockPos.Mutable();
 
-        for (Template.BlockInfo blockInfo : instance.blocks()) {
+        for (Template.BlockInfo blockInfo : palette.blocks()) {
             mutableBlockPos.set(blockInfo.pos);
             transform(mutableBlockPos, mirror, rotation, pivot);
             mutableBlockPos.move(offset);
 
             if (boundingBox.isInside(mutableBlockPos)) {
-                list.add(blockInfo);
+                listOfInBoundsRelativePositions.add(blockInfo);
             }
         }
 
-        return list;
+        // DO NOT REMOVE. This is required because the Template will return false for an entirely empty list and then remove the structure piece
+        // out of the structure start, preventing it from placing blocks into any other side chunks that the piece was supposed to place blocks in.
+        if (listOfInBoundsRelativePositions.isEmpty() && !originalPositions.isEmpty()) {
+            listOfInBoundsRelativePositions.add(originalPositions.get(0));
+        }
+
+        return listOfInBoundsRelativePositions;
     }
 
     private static void transform(BlockPos.Mutable mutableBlockPos, Mirror mirror, Rotation rotation, BlockPos pivot) {

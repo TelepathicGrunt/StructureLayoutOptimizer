@@ -15,7 +15,7 @@ import java.util.List;
 public class StructureTemplateMixin {
 
     @Redirect(method = "placeInWorld(Lnet/minecraft/world/level/ServerLevelAccessor;Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructurePlaceSettings;Ljava/util/Random;I)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate$Palette;blocks()Ljava/util/List;"))
-    private List<StructureTemplate.StructureBlockInfo> structureLayoutOptimizer$shrinkStructureTemplateBlocksList(StructureTemplate.Palette instance, @Local(ordinal = 0, argsOnly = true) BlockPos offset, @Local(ordinal = 0, argsOnly = true) StructurePlaceSettings settings) {
-        return StructureTemplateOptimizer.getStructureBlockInfosInBounds(instance, offset, settings);
+    private List<StructureTemplate.StructureBlockInfo> structureLayoutOptimizer$shrinkStructureTemplateBlocksList(StructureTemplate.Palette palette, @Local(ordinal = 0, argsOnly = true) BlockPos offset, @Local(ordinal = 0, argsOnly = true) StructurePlaceSettings settings) {
+        return StructureTemplateOptimizer.getStructureBlockInfosInBounds(palette, offset, settings);
     }
 }
