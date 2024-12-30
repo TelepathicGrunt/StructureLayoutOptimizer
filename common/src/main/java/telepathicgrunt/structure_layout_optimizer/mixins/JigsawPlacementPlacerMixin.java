@@ -45,7 +45,7 @@ public class JigsawPlacementPlacerMixin {
     ////////////////////////////////
 
     @ModifyExpressionValue(method = "tryPlacingChildren",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/levelgen/structure/pools/StructurePoolElement;getShuffledJigsawBlocks(Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureManager;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/Rotation;Ljava/util/Random;)Ljava/util/List;", ordinal = 1))
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/levelgen/structure/pools/StructurePoolElement;getShuffledJigsawBlocks(Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplateManager;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/Rotation;Lnet/minecraft/util/RandomSource;)Ljava/util/List;", ordinal = 1))
     private List<StructureTemplate.StructureBlockInfo> structureLayoutOptimizer$skipBlockedJigsaws(
             List<StructureTemplate.StructureBlockInfo> original,
             @Local(ordinal = 0, argsOnly = true) boolean useExpansionHack,
