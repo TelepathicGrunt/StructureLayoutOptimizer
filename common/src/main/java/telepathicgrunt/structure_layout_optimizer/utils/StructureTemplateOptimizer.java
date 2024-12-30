@@ -23,10 +23,11 @@ public class StructureTemplateOptimizer {
     private static final Map<StructureProcessor, Boolean> FINALIZE_PROCESSING_PROCESSORS = Object2BooleanMaps.synchronize(new Object2BooleanOpenHashMap<>());
     private static final String FINALIZE_PROCESSING_METHOD_NAME = PlatformService.INSTANCE.getFinalizeProcessingMethodName();
 
-    public static @NotNull List<StructureTemplate.StructureBlockInfo> getStructureBlockInfosInBounds(StructureTemplate.Palette instance, BlockPos offset, StructurePlaceSettings structurePlaceSettings) {
+    public static @NotNull List<StructureTemplate.StructureBlockInfo> getStructureBlockInfosInBounds(StructureTemplate.Palette palette, BlockPos offset, StructurePlaceSettings structurePlaceSettings) {
         BoundingBox boundingBox = structurePlaceSettings.getBoundingBox();
+        List<StructureTemplate.StructureBlockInfo> originalPositions = palette.blocks();
         if (boundingBox == null) {
-            return instance.blocks();
+            return originalPositions;
         }
 
         // Capped processor needs full nbt block lists
@@ -40,20 +41,26 @@ public class StructureTemplateOptimizer {
         Rotation rotation = structurePlaceSettings.getRotation();
         BlockPos pivot = structurePlaceSettings.getRotationPivot();
 
-        List<StructureTemplate.StructureBlockInfo> list = new ArrayList<>();
+        List<StructureTemplate.StructureBlockInfo> listOfInBoundsRelativePositions = new ArrayList<>();
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
 
-        for (StructureTemplate.StructureBlockInfo blockInfo : instance.blocks()) {
-            mutableBlockPos.set(blockInfo.pos());
+        for (StructureTemplate.StructureBlockInfo blockInfo : palette.blocks()) {
+            mutableBlockPos.set(blockInfo.pos);
             transform(mutableBlockPos, mirror, rotation, pivot);
             mutableBlockPos.move(offset);
 
             if (boundingBox.isInside(mutableBlockPos)) {
-                list.add(blockInfo);
+                listOfInBoundsRelativePositions.add(blockInfo);
             }
         }
 
-        return list;
+        // DO NOT REMOVE. This is required because the Template will return false for an entirely empty list and then remove the structure piece
+        // out of the structure start, preventing it from placing blocks into any other side chunks that the piece was supposed to place blocks in.
+        if (listOfInBoundsRelativePositions.isEmpty() && !originalPositions.isEmpty()) {
+            listOfInBoundsRelativePositions.add(originalPositions.get(0));
+        }
+
+        return listOfInBoundsRelativePositions;
     }
 
     private static @NotNull Boolean isFinalizeProcessor(StructureProcessor structureProcessor) {
