@@ -20,8 +20,34 @@ dependencies {
     modImplementation "com.teamresourceful.resourcefulconfig:resourcefulconfig-forge-${project.resourceful_config_minecraft_version}:${project.resourceful_config_version}"
 }
 
+legacyForge {
+    version = "${project.minecraft_version}-${project.forge_version}"
+
+    runs {
+        client {
+            client()
+            systemProperty 'mixin.env.remapRefMap', 'true'
+            systemProperty 'mixin.env.refMapRemappingFile', project.layout.buildDirectory.get().file('createSrgToMcp/output.srg').asFile.absolutePath
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+        }
+
+        server {
+            server()
+            systemProperty 'mixin.env.remapRefMap', 'true'
+            systemProperty 'mixin.env.refMapRemappingFile', project.layout.buildDirectory.get().file('createSrgToMcp/output.srg').asFile.absolutePath
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+        }
+    }
+    mods {
+        modServerRun {
+            sourceSet sourceSets.main
+            sourceSet project(":common").sourceSets.main
+        }
+    }
+}
+
 publishMods {
-    file = tasks.jar.archiveFile
+    file = tasks.reobfJar.archiveFile
     modLoaders.add("forge")
 
     File changeLog = rootProject.file("CHANGELOG.md")
@@ -76,32 +102,6 @@ mixin {
     add(sourceSets.main, "${mod_id}.refmap.json")
 
     config("${mod_id}.mixins.json")
-}
-
-legacyForge {
-    version = "${project.minecraft_version}-${project.forge_version}"
-
-    runs {
-        client {
-            client()
-            systemProperty 'mixin.env.remapRefMap', 'true'
-            systemProperty 'mixin.env.refMapRemappingFile', project.layout.buildDirectory.get().file('createSrgToMcp/output.srg').asFile.absolutePath
-            systemProperty 'forge.logging.markers', 'REGISTRIES'
-        }
-
-        server {
-            server()
-            systemProperty 'mixin.env.remapRefMap', 'true'
-            systemProperty 'mixin.env.refMapRemappingFile', project.layout.buildDirectory.get().file('createSrgToMcp/output.srg').asFile.absolutePath
-            systemProperty 'forge.logging.markers', 'REGISTRIES'
-        }
-    }
-    mods {
-        modServerRun {
-            sourceSet sourceSets.main
-            sourceSet project(":common").sourceSets.main
-        }
-    }
 }
 
 tasks.named("compileJava", JavaCompile) {
