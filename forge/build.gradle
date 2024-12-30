@@ -1,8 +1,6 @@
 plugins {
-    id 'org.spongepowered.mixin' version '0.7-SNAPSHOT'
-    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
+    id 'net.neoforged.moddev' version '2.0.65-beta' apply false
 }
-jarJar.enable()
 
 configurations {
     runtimeClasspath.extendsFrom localRuntime
@@ -19,8 +17,9 @@ dependencies {
 
     annotationProcessor 'net.fabricmc:sponge-mixin:0.13.0+mixin.0.8.5'
     annotationProcessor "io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}"
-    minecraftLibrary("io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}")
-    minecraftEmbed("io.github.llamalad7:mixinextras-forge:${project.mixin_extras_version}") {
+    additionalRuntimeClasspath("io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}")
+    implementation("io.github.llamalad7:mixinextras-forge:${project.mixin_extras_version}")
+    jarJar("io.github.llamalad7:mixinextras-forge:${project.mixin_extras_version}") {
         jarJar.ranged(it, "[${project.mixin_extras_version},)")
     }
 
