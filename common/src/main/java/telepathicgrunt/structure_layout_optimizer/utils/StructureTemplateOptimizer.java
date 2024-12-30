@@ -33,7 +33,7 @@ public class StructureTemplateOptimizer {
         // Capped processor needs full nbt block lists
         for (StructureProcessor processor : structurePlaceSettings.getProcessors()) {
             if (FINALIZE_PROCESSING_PROCESSORS.computeIfAbsent(processor, StructureTemplateOptimizer::isFinalizeProcessor)) {
-                return instance.blocks();
+                return palette.blocks();
             }
         }
 
@@ -45,7 +45,7 @@ public class StructureTemplateOptimizer {
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
 
         for (StructureTemplate.StructureBlockInfo blockInfo : palette.blocks()) {
-            mutableBlockPos.set(blockInfo.pos);
+            mutableBlockPos.set(blockInfo.pos());
             transform(mutableBlockPos, mirror, rotation, pivot);
             mutableBlockPos.move(offset);
 
