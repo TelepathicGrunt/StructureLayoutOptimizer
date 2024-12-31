@@ -1,3 +1,5 @@
+FORGE: Put back the requirement for 47.3.12 or newer Forge because I am using a feature from 47.3.12 Forge. This will now provide the better and more clear error message when using outdated Forge
+
 FORGE: Upload the remapped jar. My bad in the conversion to Legacy ModDevGradle
 
 FORGE: Fixed Forge jar not working due to ForgeGradle being broken junk. Switched to Legacy ModDevGradle and now the Forge jar is created properly.
