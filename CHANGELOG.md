@@ -1,3 +1,5 @@
+FORGE: Fixed jar file's mixin remap not being built correctly. 
+
 Added a new optimization to skip checking child rigid pieces if the parent Jigsaw Block is entirely blocked off. This is because there is no room to spawn any piece so all rigid children will fail the check. Thus making it safe for us to do this optimization and save us from doing expensive Jigsaw Block match up checks in structures that have excessive amounts of Jigsaw Blocks.
 
 Fixed a rare and obscure bug with this mod where a structure piece might not place blocks in all chunks it intersects because the piece had no blocks to place in one of those chunks. Now it should always place all of its blocks correctly.
