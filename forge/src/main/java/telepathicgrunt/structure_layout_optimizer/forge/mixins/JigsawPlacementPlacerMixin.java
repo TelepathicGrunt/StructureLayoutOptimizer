@@ -102,11 +102,11 @@ public class JigsawPlacementPlacerMixin {
     /// /////////////////////////////
 
     @Final
-    @Shadow
+    @Shadow(aliases = {"field_214887_f", "rand"})
     private Random random;
 
     @Final
-    @Shadow
+    @Shadow(aliases = {"field_214885_d", "structureManager"})
     private TemplateManager structureManager;
 
     @Redirect(method = "tryPlacingChildren", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/gen/feature/jigsaw/JigsawPattern;getShuffledTemplates(Ljava/util/Random;)Ljava/util/List;", ordinal = 0))
