@@ -149,7 +149,7 @@ public class JigsawPlacementPlacerMixin {
     }
 
     @ModifyExpressionValue(method = "func_236831_a_(Lnet/minecraft/world/gen/feature/structure/AbstractVillagePiece;Lorg/apache/commons/lang3/mutable/MutableObject;IIZ)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/gen/feature/jigsaw/JigsawPattern;getShuffledPieces(Ljava/util/Random;)Ljava/util/List;", ordinal = 0))
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Rotation;shuffledRotations(Ljava/util/Random;)Ljava/util/List;", ordinal = 0))
     private List<Rotation> structureLayoutOptimizer$skipDuplicateTemplatePoolElementLists2(List<Rotation> original, @Local(ordinal = 0) List<JigsawPiece> list, @Local(ordinal = 1) JigsawPiece structurepoolelement1) {
         if (!StructureLayoutOptimizerMod.getConfig().deduplicateShuffledTemplatePoolElementList && list instanceof TrojanArrayList) {
             TrojanArrayList<JigsawPiece> trojanArrayList = (TrojanArrayList<JigsawPiece>) list;
