@@ -19,12 +19,12 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
-    modImplementation "me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}"
+    modImplementation "me.shedaniel.cloth:config-2:${project.cloth_config_fabric_version}"
 
-    modCompileOnly("com.terraformersmc:modmenu:${project.mod_menu_version}") {
+    modCompileOnly("io.github.prospector:modmenu:${project.mod_menu_version}") {
         transitive = false
     }
-    modLocalRuntime("com.terraformersmc:modmenu:${project.mod_menu_version}") {
+    modLocalRuntime("io.github.prospector:modmenu:${project.mod_menu_version}") {
         transitive = false
     }
 }

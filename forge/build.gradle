@@ -25,7 +25,7 @@ dependencies {
     minecraftLibrary "io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}"
     shade "io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}"
 
-    implementation fg.deobf("me.shedaniel.cloth:cloth-config-forge:${project.cloth_config_version}")
+    implementation fg.deobf("me.shedaniel.cloth:cloth-config-forge:${project.cloth_config_forge_version}")
 }
 
 publishMods {
