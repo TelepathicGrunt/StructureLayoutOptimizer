@@ -1,7 +1,5 @@
 package telepathicgrunt.structure_layout_optimizer.configs;
 
-import java.util.Arrays;
-
 //Source: https://github.com/Team-Resourceful/Resourceful-Config/tree/1.21.x/common/src/main/java/com/teamresourceful/resourcefulconfig/common/jsonc
 public interface JsoncElement {
 

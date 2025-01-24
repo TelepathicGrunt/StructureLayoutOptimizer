@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 public class JsoncObject implements JsoncElement {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final Pattern COMMENT_PATTERN = Pattern.compile("(^\s*//.*$)|(/\\*(\\*(?!/)|[^*])*\\*/)", Pattern.MULTILINE);
+    private static final Pattern COMMENT_PATTERN = Pattern.compile("(^\\s*//.*$)|(/\\*(\\*(?!/)|[^*])*\\*/)", Pattern.MULTILINE);
 
     private String comment = "";
     private final Map<String, JsoncElement> elements = new LinkedHashMap<>();

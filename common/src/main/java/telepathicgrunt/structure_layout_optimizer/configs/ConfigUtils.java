@@ -1,8 +1,19 @@
 package telepathicgrunt.structure_layout_optimizer.configs;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 public class ConfigUtils {
+
+    static File getConfigFile(Path configDir, String fileName) {
+        File jsonFile = configDir.resolve(fileName + ".json").toFile();
+        if (jsonFile.exists()) {
+            return jsonFile;
+        }
+        return configDir.resolve(fileName + ".jsonc").toFile();
+    }
+
     static String repeat(String input, int count) {
         if (count < 0) {
             throw new IllegalArgumentException("count is negative: " + count);

@@ -1,9 +1,55 @@
 package telepathicgrunt.structure_layout_optimizer.configs;
 
 import com.google.gson.JsonObject;
+import org.apache.commons.io.FileUtils;
+import telepathicgrunt.structure_layout_optimizer.StructureLayoutOptimizerMod;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 
 public class SLOConfig {
     public static boolean deduplicateShuffledTemplatePoolElementList = false;
+
+    public static void configStartup(Path configFolderLocation) {
+        File configFile = ConfigUtils.getConfigFile(configFolderLocation, StructureLayoutOptimizerMod.MODID);
+        if (configFile.exists()) {
+            loadFile(configFile);
+
+            if (configFile.getName().endsWith(".json")) {
+                if (!configFile.delete()) {
+                    StructureLayoutOptimizerMod.LOGGER.warn("Failed to delete old config file " + StructureLayoutOptimizerMod.MODID + ".json");
+                }
+                else {
+                    saveFile(configFile);
+                }
+            }
+        }
+        else {
+            saveFile(configFile);
+        }
+    }
+
+    private static void loadFile(File configFile) {
+        try {
+            String data = FileUtils.readFileToString(configFile, StandardCharsets.UTF_8);
+            JsonObject json = JsoncObject.parse(data);
+            loadConfig(json);
+        }
+        catch (Exception e) {
+            StructureLayoutOptimizerMod.LOGGER.error("Failed to read config file " + StructureLayoutOptimizerMod.MODID + ".json | {}", e.getLocalizedMessage());
+        }
+    }
+
+    private static void saveFile(File configFile) {
+        JsoncObject json = save();
+        try {
+            FileUtils.write(configFile, json.toString(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            StructureLayoutOptimizerMod.LOGGER.error("Failed to write config file " + StructureLayoutOptimizerMod.MODID + ".json | {}", e.getLocalizedMessage());
+        }
+    }
 
     public static JsoncObject save() {
         JsoncObject object = new JsoncObject();
