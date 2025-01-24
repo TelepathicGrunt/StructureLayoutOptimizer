@@ -112,7 +112,7 @@ public class JigsawPlacementPlacerMixin {
     private Random random;
 
     @Final
-    @Shadow(aliases = {"field_214885_d", "structureManager"})
+    @Shadow(aliases = {"field_214885_d", "templateManager"})
     private TemplateManager structureManager;
 
     @Redirect(method = "func_236831_a_(Lnet/minecraft/world/gen/feature/structure/AbstractVillagePiece;Lorg/apache/commons/lang3/mutable/MutableObject;IIZ)V",
