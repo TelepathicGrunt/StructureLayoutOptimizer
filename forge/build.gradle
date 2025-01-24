@@ -24,8 +24,6 @@ dependencies {
     annotationProcessor "io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}"
     minecraftLibrary "io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}"
     shade "io.github.llamalad7:mixinextras-common:${project.mixin_extras_version}"
-
-    implementation fg.deobf("me.shedaniel.cloth:cloth-config-forge:${project.cloth_config_forge_version}")
 }
 
 publishMods {
@@ -35,12 +33,8 @@ publishMods {
     File changeLog = rootProject.file("CHANGELOG.md")
     String changeLogText = changeLog.exists() ? changeLog.text : ""
 
-    def uploadDependenciesCf = [
-            'cloth-config': true
-    ]
-    def uploadDependenciesMr = [
-            'cloth-config': true
-    ]
+    def uploadDependenciesCf = []
+    def uploadDependenciesMr = []
 
     if (project.hasProperty('curseforge_id')) {
         curseforge('CurseforgeForge') {

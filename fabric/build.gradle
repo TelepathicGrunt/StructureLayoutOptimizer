@@ -19,8 +19,6 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
-    modImplementation "me.shedaniel.cloth:config-2:${project.cloth_config_fabric_version}"
-
     modCompileOnly("io.github.prospector:modmenu:${project.mod_menu_version}") {
         transitive = false
     }
@@ -36,12 +34,8 @@ publishMods {
     File changeLog = rootProject.file("CHANGELOG.md")
     String changeLogText = changeLog.exists() ? changeLog.text : ""
 
-    def uploadDependenciesCf = [
-            'cloth-config': true
-    ]
-    def uploadDependenciesMr = [
-            'cloth-config': true
-    ]
+    def uploadDependenciesCf = []
+    def uploadDependenciesMr = []
 
     if (project.hasProperty('curseforge_id')) {
         curseforge('curseforgeFabric') {

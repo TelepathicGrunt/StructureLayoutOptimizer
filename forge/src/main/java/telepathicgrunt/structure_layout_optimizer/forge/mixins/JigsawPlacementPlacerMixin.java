@@ -25,6 +25,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import telepathicgrunt.structure_layout_optimizer.StructureLayoutOptimizerMod;
+import telepathicgrunt.structure_layout_optimizer.configs.SLOConfig;
 import telepathicgrunt.structure_layout_optimizer.forge.utils.BoxOctree;
 import telepathicgrunt.structure_layout_optimizer.forge.utils.GeneralUtils;
 import telepathicgrunt.structure_layout_optimizer.forge.utils.TrojanArrayList;
@@ -117,7 +118,7 @@ public class JigsawPlacementPlacerMixin {
     @Redirect(method = "func_236831_a_(Lnet/minecraft/world/gen/feature/structure/AbstractVillagePiece;Lorg/apache/commons/lang3/mutable/MutableObject;IIZ)V",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/gen/feature/jigsaw/JigsawPattern;getShuffledPieces(Ljava/util/Random;)Ljava/util/List;", ordinal = 0))
     private List<JigsawPiece> structureLayoutOptimizer$removeDuplicateTemplatePoolElementLists(JigsawPattern instance, Random random) {
-        if (!StructureLayoutOptimizerMod.getConfig().deduplicateShuffledTemplatePoolElementList) {
+        if (!SLOConfig.deduplicateShuffledTemplatePoolElementList) {
             return instance.getShuffledPieces(random);
         }
 
@@ -145,13 +146,13 @@ public class JigsawPlacementPlacerMixin {
             at = @At(value = "INVOKE", target = "Lcom/google/common/collect/Lists;newArrayList()Ljava/util/ArrayList;", ordinal = 0))
     private ArrayList<JigsawPiece> structureLayoutOptimizer$skipDuplicateTemplatePoolElementLists1() {
         // Swap with trojan list, so we can record what pieces we visited
-        return StructureLayoutOptimizerMod.getConfig().deduplicateShuffledTemplatePoolElementList ? Lists.newArrayList() : new TrojanArrayList<>();
+        return SLOConfig.deduplicateShuffledTemplatePoolElementList ? Lists.newArrayList() : new TrojanArrayList<>();
     }
 
     @ModifyExpressionValue(method = "func_236831_a_(Lnet/minecraft/world/gen/feature/structure/AbstractVillagePiece;Lorg/apache/commons/lang3/mutable/MutableObject;IIZ)V",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Rotation;shuffledRotations(Ljava/util/Random;)Ljava/util/List;", ordinal = 0))
     private List<Rotation> structureLayoutOptimizer$skipDuplicateTemplatePoolElementLists2(List<Rotation> original, @Local(ordinal = 0) List<JigsawPiece> list, @Local(ordinal = 1) JigsawPiece structurepoolelement1) {
-        if (!StructureLayoutOptimizerMod.getConfig().deduplicateShuffledTemplatePoolElementList && list instanceof TrojanArrayList) {
+        if (!SLOConfig.deduplicateShuffledTemplatePoolElementList && list instanceof TrojanArrayList) {
             TrojanArrayList<JigsawPiece> trojanArrayList = (TrojanArrayList<JigsawPiece>) list;
             // Do not run this piece's logic since we already checked its 4 rotations in the past.
             if (trojanArrayList.elementsAlreadyParsed.contains(structurepoolelement1)) {

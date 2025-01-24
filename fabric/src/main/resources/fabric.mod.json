@@ -18,16 +18,13 @@
     "main": [
       "telepathicgrunt.structure_layout_optimizer.fabric.entrypoints.Main"
     ],
-    "modmenu": [
-      "telepathicgrunt.structure_layout_optimizer.fabric.entrypoints.Modmenu"
-    ]
+    "modmenu": []
   },
   "depends": {
     "fabricloader": ">=${fabric_loader_version}",
-    "minecraft": "=1.16.5",
+    "minecraft": "=1.16.1",
     "java": ">=${java_version}",
-    "fabric": "*",
-    "cloth-config2": "*"
+    "fabric": "*"
   },
   "environment": "*",
   "accessWidener": "${mod_id}.accesswidener",
