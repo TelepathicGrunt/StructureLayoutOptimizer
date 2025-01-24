@@ -1,8 +1,7 @@
 package telepathicgrunt.structure_layout_optimizer.fabric.entrypoints;
 
-import com.terraformersmc.modmenu.api.ConfigScreenFactory;
-import com.terraformersmc.modmenu.api.ModMenuApi;
-import me.shedaniel.autoconfig.AutoConfig;
+import io.github.prospector.modmenu.api.ConfigScreenFactory;
+import io.github.prospector.modmenu.api.ModMenuApi;
 import telepathicgrunt.structure_layout_optimizer.SloConfig;
 
 public class Modmenu implements ModMenuApi {

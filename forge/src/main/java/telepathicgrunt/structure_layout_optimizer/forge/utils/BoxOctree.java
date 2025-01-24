@@ -25,8 +25,8 @@ public class BoxOctree {
     }
 
     private BoxOctree(AxisAlignedBB axisAlignedBB, int parentDepth) {
-        boundary = axisAlignedBB.move(0, 0, 0); // deep copy
-        size = new Vector3i(roundAwayFromZero(boundary.getXsize()), roundAwayFromZero(boundary.getYsize()), roundAwayFromZero(boundary.getZsize()));
+        boundary = axisAlignedBB.offset(0, 0, 0); // deep copy
+        size = new Vector3i(roundAwayFromZero(boundary.getXSize()), roundAwayFromZero(boundary.getYSize()), roundAwayFromZero(boundary.getZSize()));
         depth = parentDepth + 1;
     }
 

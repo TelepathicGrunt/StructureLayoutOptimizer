@@ -30,7 +30,7 @@ public class StructureTemplateOptimizer {
         for (StructureTemplate.StructureBlockInfo blockInfo : palette.blocks()) {
             mutableBlockPos.set(blockInfo.pos);
             transform(mutableBlockPos, mirror, rotation, pivot);
-            mutableBlockPos.move(offset);
+            mutableBlockPos.move(offset.getX(), offset.getY(), offset.getZ());
 
             if (boundingBox.isInside(mutableBlockPos)) {
                 listOfInBoundsRelativePositions.add(blockInfo);

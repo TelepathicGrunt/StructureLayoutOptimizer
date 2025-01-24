@@ -1,10 +1,6 @@
 package telepathicgrunt.structure_layout_optimizer;
 
 
-import me.shedaniel.autoconfig.AutoConfig;
-import me.shedaniel.autoconfig.ConfigHolder;
-import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
-
 public class StructureLayoutOptimizerMod {
 
     private static ConfigHolder<SloConfig> CONFIG;

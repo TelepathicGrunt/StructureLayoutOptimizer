@@ -14,7 +14,7 @@ public class TrojanVoxelShape extends VoxelShape {
     }
 
     @Override
-    protected DoubleList getCoords(Direction.Axis pAxis) {
+    protected DoubleList getValues(Direction.Axis axis) {
         return null;
     }
 }

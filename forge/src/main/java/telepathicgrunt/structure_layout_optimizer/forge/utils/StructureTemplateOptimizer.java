@@ -15,24 +15,24 @@ public class StructureTemplateOptimizer {
 
     public static @NotNull List<Template.BlockInfo> getStructureBlockInfosInBounds(Template.Palette palette, BlockPos offset, PlacementSettings structurePlaceSettings) {
         MutableBoundingBox boundingBox = structurePlaceSettings.getBoundingBox();
-        List<Template.BlockInfo> originalPositions = palette.blocks();
+        List<Template.BlockInfo> originalPositions = palette.func_237157_a_();
         if (boundingBox == null) {
             return originalPositions;
         }
 
         Mirror mirror = structurePlaceSettings.getMirror();
         Rotation rotation = structurePlaceSettings.getRotation();
-        BlockPos pivot = structurePlaceSettings.getRotationPivot();
+        BlockPos pivot = structurePlaceSettings.getCenterOffset();
 
         List<Template.BlockInfo> listOfInBoundsRelativePositions = new ArrayList<>();
         BlockPos.Mutable mutableBlockPos = new BlockPos.Mutable();
 
-        for (Template.BlockInfo blockInfo : palette.blocks()) {
-            mutableBlockPos.set(blockInfo.pos);
+        for (Template.BlockInfo blockInfo : palette.func_237157_a_()) {
+            mutableBlockPos.setPos(blockInfo.pos);
             transform(mutableBlockPos, mirror, rotation, pivot);
-            mutableBlockPos.move(offset);
+            mutableBlockPos.move(offset.getX(), offset.getY(), offset.getZ());
 
-            if (boundingBox.isInside(mutableBlockPos)) {
+            if (boundingBox.isVecInside(mutableBlockPos)) {
                 listOfInBoundsRelativePositions.add(blockInfo);
             }
         }
@@ -66,16 +66,16 @@ public class StructureTemplateOptimizer {
         int i1 = pivot.getZ();
         switch (rotation) {
             case COUNTERCLOCKWISE_90:
-                mutableBlockPos.set(l - i1 + k, j, l + i1 - i);
+                mutableBlockPos.setPos(l - i1 + k, j, l + i1 - i);
                 return;
             case CLOCKWISE_90:
-                mutableBlockPos.set(l + i1 - k, j, i1 - l + i);
+                mutableBlockPos.setPos(l + i1 - k, j, i1 - l + i);
                 return;
             case CLOCKWISE_180:
-                mutableBlockPos.set(l + l - i, j, i1 + i1 - k);
+                mutableBlockPos.setPos(l + l - i, j, i1 + i1 - k);
                 return;
             default:
-                if (flag) mutableBlockPos.set(i, j, k);
+                if (flag) mutableBlockPos.setPos(i, j, k);
         }
     }
 }
