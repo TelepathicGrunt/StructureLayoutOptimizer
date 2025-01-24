@@ -16,10 +16,11 @@ import telepathicgrunt.structure_layout_optimizer.forge.utils.TrojanVoxelShape;
 public class JigsawPlacementMixin {
 
 
-    @Redirect(method = "addPieces(Lnet/minecraft/util/registry/DynamicRegistries;Lnet/minecraft/world/gen/feature/structure/VillageConfig;Lnet/minecraft/world/gen/feature/jigsaw/JigsawManager$IPieceFactory;Lnet/minecraft/world/gen/ChunkGenerator;Lnet/minecraft/world/gen/feature/template/TemplateManager;Lnet/minecraft/util/math/BlockPos;Ljava/util/List;Ljava/util/Random;ZZ)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/shapes/VoxelShapes;join(Lnet/minecraft/util/math/shapes/VoxelShape;Lnet/minecraft/util/math/shapes/VoxelShape;Lnet/minecraft/util/math/shapes/IBooleanFunction;)Lnet/minecraft/util/math/shapes/VoxelShape;"))
+    @Redirect(method = "func_236823_a_(Lnet/minecraft/util/ResourceLocation;ILnet/minecraft/world/gen/feature/jigsaw/JigsawManager$IPieceFactory;Lnet/minecraft/world/gen/ChunkGenerator;Lnet/minecraft/world/gen/feature/template/TemplateManager;Lnet/minecraft/util/math/BlockPos;Ljava/util/List;Ljava/util/Random;ZZ)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/shapes/VoxelShapes;combineAndSimplify(Lnet/minecraft/util/math/shapes/VoxelShape;Lnet/minecraft/util/math/shapes/VoxelShape;Lnet/minecraft/util/math/shapes/IBooleanFunction;)Lnet/minecraft/util/math/shapes/VoxelShape;"))
     private static VoxelShape structureLayoutOptimizer$replaceVoxelShape1(VoxelShape pShape1, VoxelShape pShape2, IBooleanFunction pFunction, @Local(ordinal = 0) AxisAlignedBB aabb, @Local(ordinal = 0) MutableBoundingBox boundingbox) {
         TrojanVoxelShape trojanVoxelShape = new TrojanVoxelShape(new BoxOctree(aabb));
-        trojanVoxelShape.boxOctree.addBox(AxisAlignedBB.of(boundingbox));
+        trojanVoxelShape.boxOctree.addBox(AxisAlignedBB.toImmutable(boundingbox));
         return trojanVoxelShape;
     }
 }

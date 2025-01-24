@@ -89,7 +89,7 @@ mixin {
 }
 
 minecraft {
-    mappings channel: 'parchment', version: "${project.parchment_mappings_version}-${project.parchment_minecraft_version}"
+    mappings channel: 'snapshot', version: '20200514-1.16'
 
     copyIdeResources = true //Calls processResources when in dev
 

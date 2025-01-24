@@ -37,15 +37,16 @@ import java.util.Random;
 @Mixin(JigsawManager.Assembler.class)
 public class JigsawPlacementPlacerMixin {
 
-    @Redirect(method = "tryPlacingChildren", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/JigsawBlock;canAttach(Lnet/minecraft/world/gen/feature/template/Template$BlockInfo;Lnet/minecraft/world/gen/feature/template/Template$BlockInfo;)Z"))
+    @Redirect(method = "func_236831_a_(Lnet/minecraft/world/gen/feature/structure/AbstractVillagePiece;Lorg/apache/commons/lang3/mutable/MutableObject;IIZ)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/block/JigsawBlock;func_220171_a(Lnet/minecraft/world/gen/feature/template/Template$BlockInfo;Lnet/minecraft/world/gen/feature/template/Template$BlockInfo;)Z"))
     private boolean structureLayoutOptimizer$optimizeJigsawConnecting(Template.BlockInfo jigsaw1, Template.BlockInfo jigsaw2) {
         return GeneralUtils.canJigsawsAttach(jigsaw1, jigsaw2);
     }
 
     ////////////////////////////////
 
-    @ModifyExpressionValue(method = "tryPlacingChildren",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/gen/feature/jigsaw/JigsawPiece;getShuffledJigsawBlocks(Lnet/minecraft/world/gen/feature/template/TemplateManager;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/Rotation;Ljava/util/Random;)Ljava/util/List;", ordinal = 1))
+    @ModifyExpressionValue(method = "func_236831_a_(Lnet/minecraft/world/gen/feature/structure/AbstractVillagePiece;Lorg/apache/commons/lang3/mutable/MutableObject;IIZ)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/gen/feature/jigsaw/JigsawPiece;getJigsawBlocks(Lnet/minecraft/world/gen/feature/template/TemplateManager;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/Rotation;Ljava/util/Random;)Ljava/util/List;", ordinal = 1))
     private List<Template.BlockInfo> structureLayoutOptimizer$skipBlockedJigsaws(
             List<Template.BlockInfo> original,
             @Local(ordinal = 0, argsOnly = true) boolean useExpansionHack,
@@ -57,7 +58,7 @@ public class JigsawPlacementPlacerMixin {
         if (voxelShapeMutableObject.getValue() instanceof TrojanVoxelShape) {
             TrojanVoxelShape trojanVoxelShape = ((TrojanVoxelShape) voxelShapeMutableObject.getValue());
             // If rigid and target position is already an invalid spot, do not run rest of logic.
-            JigsawPattern.PlacementBehaviour candidatePlacementBehavior = structurePoolElement.getProjection();
+            JigsawPattern.PlacementBehaviour candidatePlacementBehavior = structurePoolElement.getPlacementBehaviour();
             boolean isCandidateRigid = candidatePlacementBehavior == JigsawPattern.PlacementBehaviour.RIGID;
             if (isCandidateRigid && (!trojanVoxelShape.boxOctree.boundaryContains(parentTargetPosition) || trojanVoxelShape.boxOctree.withinAnyBox(parentTargetPosition))) {
                 return new ArrayList<>();
@@ -68,10 +69,11 @@ public class JigsawPlacementPlacerMixin {
 
     /// /////////////////////////////
 
-    @WrapOperation(method = "tryPlacingChildren", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/shapes/VoxelShapes;joinIsNotEmpty(Lnet/minecraft/util/math/shapes/VoxelShape;Lnet/minecraft/util/math/shapes/VoxelShape;Lnet/minecraft/util/math/shapes/IBooleanFunction;)Z"))
+    @WrapOperation(method = "func_236831_a_(Lnet/minecraft/world/gen/feature/structure/AbstractVillagePiece;Lorg/apache/commons/lang3/mutable/MutableObject;IIZ)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/shapes/VoxelShapes;compare(Lnet/minecraft/util/math/shapes/VoxelShape;Lnet/minecraft/util/math/shapes/VoxelShape;Lnet/minecraft/util/math/shapes/IBooleanFunction;)Z"))
     private boolean structureLayoutOptimizer$replaceVoxelShape2(VoxelShape parentBounds, VoxelShape pieceShape, IBooleanFunction booleanOp, Operation<Boolean> original, @Local(ordinal = 3) MutableBoundingBox pieceBounds) {
         if (parentBounds instanceof TrojanVoxelShape) {
-            AxisAlignedBB pieceAABB = AxisAlignedBB.of(pieceBounds).deflate(0.25D);
+            AxisAlignedBB pieceAABB = AxisAlignedBB.toImmutable(pieceBounds).shrink(0.25D);
 
             // Have to inverse because of an ! outside our wrap
             return !((TrojanVoxelShape) parentBounds).boxOctree.withinBoundsButNotIntersectingChildren(pieceAABB);
@@ -80,21 +82,24 @@ public class JigsawPlacementPlacerMixin {
         return original.call(parentBounds, pieceShape, booleanOp);
     }
 
-    @Redirect(method = "tryPlacingChildren", at = @At(value = "INVOKE", target = "Lorg/apache/commons/lang3/mutable/MutableObject;setValue(Ljava/lang/Object;)V", ordinal = 0))
+    @Redirect(method = "func_236831_a_(Lnet/minecraft/world/gen/feature/structure/AbstractVillagePiece;Lorg/apache/commons/lang3/mutable/MutableObject;IIZ)V",
+            at = @At(value = "INVOKE", target = "Lorg/apache/commons/lang3/mutable/MutableObject;setValue(Ljava/lang/Object;)V", ordinal = 0))
     private void structureLayoutOptimizer$replaceVoxelShape3(MutableObject<VoxelShape> instance, Object value, @Local(ordinal = 0) MutableBoundingBox pieceBounds) {
-        TrojanVoxelShape trojanVoxelShape = new TrojanVoxelShape(new BoxOctree(AxisAlignedBB.of(pieceBounds)));
+        TrojanVoxelShape trojanVoxelShape = new TrojanVoxelShape(new BoxOctree(AxisAlignedBB.toImmutable(pieceBounds)));
         instance.setValue(trojanVoxelShape);
     }
 
-    @Redirect(method = "tryPlacingChildren", at = @At(value = "INVOKE", target = "Lorg/apache/commons/lang3/mutable/MutableObject;setValue(Ljava/lang/Object;)V", ordinal = 1))
+    @Redirect(method = "func_236831_a_(Lnet/minecraft/world/gen/feature/structure/AbstractVillagePiece;Lorg/apache/commons/lang3/mutable/MutableObject;IIZ)V",
+            at = @At(value = "INVOKE", target = "Lorg/apache/commons/lang3/mutable/MutableObject;setValue(Ljava/lang/Object;)V", ordinal = 1))
     private void structureLayoutOptimizer$replaceVoxelShape4(MutableObject<VoxelShape> instance, Object value, @Local(ordinal = 3) MutableBoundingBox pieceBounds) {
         VoxelShape shape = instance.getValue();
         if (shape instanceof TrojanVoxelShape) {
-            ((TrojanVoxelShape) shape).boxOctree.addBox(AxisAlignedBB.of(pieceBounds));
+            ((TrojanVoxelShape) shape).boxOctree.addBox(AxisAlignedBB.toImmutable(pieceBounds));
         }
     }
 
-    @Redirect(method = "tryPlacingChildren", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/shapes/VoxelShapes;joinUnoptimized(Lnet/minecraft/util/math/shapes/VoxelShape;Lnet/minecraft/util/math/shapes/VoxelShape;Lnet/minecraft/util/math/shapes/IBooleanFunction;)Lnet/minecraft/util/math/shapes/VoxelShape;"))
+    @Redirect(method = "func_236831_a_(Lnet/minecraft/world/gen/feature/structure/AbstractVillagePiece;Lorg/apache/commons/lang3/mutable/MutableObject;IIZ)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/shapes/VoxelShapes;combine(Lnet/minecraft/util/math/shapes/VoxelShape;Lnet/minecraft/util/math/shapes/VoxelShape;Lnet/minecraft/util/math/shapes/IBooleanFunction;)Lnet/minecraft/util/math/shapes/VoxelShape;"))
     private VoxelShape structureLayoutOptimizer$turnOffOldVoxelShapeBehavior1(VoxelShape indexmerger, VoxelShape indexmerger1, IBooleanFunction indexmerger2) {
         return VoxelShapes.empty();
     }
@@ -109,10 +114,11 @@ public class JigsawPlacementPlacerMixin {
     @Shadow(aliases = {"field_214885_d", "structureManager"})
     private TemplateManager structureManager;
 
-    @Redirect(method = "tryPlacingChildren", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/gen/feature/jigsaw/JigsawPattern;getShuffledTemplates(Ljava/util/Random;)Ljava/util/List;", ordinal = 0))
+    @Redirect(method = "func_236831_a_(Lnet/minecraft/world/gen/feature/structure/AbstractVillagePiece;Lorg/apache/commons/lang3/mutable/MutableObject;IIZ)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/gen/feature/jigsaw/JigsawPattern;getShuffledPieces(Ljava/util/Random;)Ljava/util/List;", ordinal = 0))
     private List<JigsawPiece> structureLayoutOptimizer$removeDuplicateTemplatePoolElementLists(JigsawPattern instance, Random random) {
         if (!StructureLayoutOptimizerMod.getConfig().deduplicateShuffledTemplatePoolElementList) {
-            return instance.getShuffledTemplates(random);
+            return instance.getShuffledPieces(random);
         }
 
         // Linked hashset keeps order of elements.
@@ -120,7 +126,7 @@ public class JigsawPlacementPlacerMixin {
 
         // Don't use addAll. Want to keep it simple in case of inefficiency in collection's addAll.
         // Set will ignore duplicates after first appearance of an element.
-        for (JigsawPiece piece : instance.getShuffledTemplates(random)) {
+        for (JigsawPiece piece : instance.getShuffledPieces(random)) {
             //noinspection UseBulkOperation
             uniquePieces.add(piece);
         }
@@ -135,13 +141,15 @@ public class JigsawPlacementPlacerMixin {
         return deduplicatedListOfPieces;
     }
 
-    @Redirect(method = "tryPlacingChildren", at = @At(value = "INVOKE", target = "Lcom/google/common/collect/Lists;newArrayList()Ljava/util/ArrayList;", ordinal = 0))
+    @Redirect(method = "func_236831_a_(Lnet/minecraft/world/gen/feature/structure/AbstractVillagePiece;Lorg/apache/commons/lang3/mutable/MutableObject;IIZ)V",
+            at = @At(value = "INVOKE", target = "Lcom/google/common/collect/Lists;newArrayList()Ljava/util/ArrayList;", ordinal = 0))
     private ArrayList<JigsawPiece> structureLayoutOptimizer$skipDuplicateTemplatePoolElementLists1() {
         // Swap with trojan list, so we can record what pieces we visited
         return StructureLayoutOptimizerMod.getConfig().deduplicateShuffledTemplatePoolElementList ? Lists.newArrayList() : new TrojanArrayList<>();
     }
 
-    @ModifyExpressionValue(method = "tryPlacingChildren", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Rotation;getShuffled(Ljava/util/Random;)Ljava/util/List;", ordinal = 0))
+    @ModifyExpressionValue(method = "func_236831_a_(Lnet/minecraft/world/gen/feature/structure/AbstractVillagePiece;Lorg/apache/commons/lang3/mutable/MutableObject;IIZ)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/gen/feature/jigsaw/JigsawPattern;getShuffledPieces(Ljava/util/Random;)Ljava/util/List;", ordinal = 0))
     private List<Rotation> structureLayoutOptimizer$skipDuplicateTemplatePoolElementLists2(List<Rotation> original, @Local(ordinal = 0) List<JigsawPiece> list, @Local(ordinal = 1) JigsawPiece structurepoolelement1) {
         if (!StructureLayoutOptimizerMod.getConfig().deduplicateShuffledTemplatePoolElementList && list instanceof TrojanArrayList) {
             TrojanArrayList<JigsawPiece> trojanArrayList = (TrojanArrayList<JigsawPiece>) list;
@@ -150,8 +158,8 @@ public class JigsawPlacementPlacerMixin {
 
                 // Prime the random with the random calls we would've skipped.
                 // Maintains vanilla compat.
-                for (Rotation rotation1 : Rotation.getShuffled(this.random)) {
-                    structurepoolelement1.getShuffledJigsawBlocks(this.structureManager, BlockPos.ZERO, rotation1, this.random);
+                for (Rotation rotation1 : Rotation.shuffledRotations(this.random)) {
+                    structurepoolelement1.getJigsawBlocks(this.structureManager, BlockPos.ZERO, rotation1, this.random);
                 }
 
                 // Short circuit the Rotation loop

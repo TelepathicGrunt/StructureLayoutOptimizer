@@ -8,6 +8,7 @@ import telepathicgrunt.structure_layout_optimizer.SloConfig;
 public class Client {
 
     public static void init(ModLoadingContext context) {
-        context.registerExtensionPoint(ExtensionPoint.CONFIGGUIFACTORY, () -> (minecraft, parent) -> AutoConfig.getConfigScreen(SloConfig.class, parent).get());
+        context.registerExtensionPoint(ExtensionPoint.CONFIGGUIFACTORY,
+                () -> (minecraft, parent) -> AutoConfig.getConfigScreen(SloConfig.class, parent).get());
     }
 }

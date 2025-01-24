@@ -14,7 +14,8 @@ import java.util.List;
 @Mixin(Template.class)
 public class StructureTemplateMixin {
 
-    @Redirect(method = "placeInWorld(Lnet/minecraft/world/IServerWorld;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/gen/feature/template/PlacementSettings;Ljava/util/Random;I)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/gen/feature/template/Template$Palette;blocks()Ljava/util/List;"))
+    @Redirect(method = "func_237146_a_(Lnet/minecraft/world/IWorld;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/gen/feature/template/PlacementSettings;Ljava/util/Random;I)Z",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/gen/feature/template/Template$Palette;func_237157_a_()Ljava/util/List;"))
     private List<Template.BlockInfo> structureLayoutOptimizer$shrinkStructureTemplateBlocksList(Template.Palette palette, @Local(ordinal = 0, argsOnly = true) BlockPos offset, @Local(ordinal = 0, argsOnly = true) PlacementSettings settings) {
         return StructureTemplateOptimizer.getStructureBlockInfosInBounds(palette, offset, settings);
     }
