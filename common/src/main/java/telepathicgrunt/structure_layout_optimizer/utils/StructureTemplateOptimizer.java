@@ -44,7 +44,7 @@ public class StructureTemplateOptimizer {
         List<StructureTemplate.StructureBlockInfo> listOfInBoundsRelativePositions = new ArrayList<>();
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
 
-        for (StructureTemplate.StructureBlockInfo blockInfo : palette.blocks()) {
+        for (StructureTemplate.StructureBlockInfo blockInfo : originalPositions) {
             mutableBlockPos.set(blockInfo.pos());
             transform(mutableBlockPos, mirror, rotation, pivot);
             mutableBlockPos.move(offset);
