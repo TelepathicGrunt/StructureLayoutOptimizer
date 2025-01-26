@@ -1,1 +1,1 @@
-Fixed bug where structure layout can be different than in vanilla. Was accidentally calling an random number generator a second time.
+Added in a paletted version of the StructureBlockInfo list to reduce memory usage in vanilla's StructureTemplate. Care was given to try and make this compatible with other mods but more testing is needed. Marking as beta for now. Special thanks to contaria's Glacier mod for the original form of this optimization.
