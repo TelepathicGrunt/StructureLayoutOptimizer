@@ -158,7 +158,7 @@ public class JigsawPlacementPlacerMixin {
 
                 // Prime the random with the random calls we would've skipped.
                 // Maintains vanilla compat.
-                for (Rotation rotation1 : Rotation.getShuffled(this.random)) {
+                for (Rotation rotation1 : original) {
                     structurepoolelement1.getShuffledJigsawBlocks(this.structureManager, BlockPos.ZERO, rotation1, this.random);
                 }
 
