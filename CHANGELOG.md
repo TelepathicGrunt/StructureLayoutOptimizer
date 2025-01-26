@@ -1,9 +1,1 @@
-FORGE: Put back the requirement for 47.3.12 or newer Forge because I am using a feature from 47.3.12 Forge. This will now provide the better and more clear error message when using outdated Forge
-
-FORGE: Upload the remapped jar. My bad in the conversion to Legacy ModDevGradle
-
-FORGE: Fixed Forge jar not working due to ForgeGradle being broken junk. Switched to Legacy ModDevGradle and now the Forge jar is created properly.
-
-Added a new optimization to skip checking child rigid pieces if the parent Jigsaw Block is entirely blocked off. This is because there is no room to spawn any piece so all rigid children will fail the check. Thus making it safe for us to do this optimization and save us from doing expensive Jigsaw Block match up checks in structures that have excessive amounts of Jigsaw Blocks.
-
-Fixed a rare and obscure bug with this mod where a structure piece might not place blocks in all chunks it intersects because the piece had no blocks to place in one of those chunks. Now it should always place all of its blocks correctly.
+Fixed bug where structure layout can be different than in vanilla. Was accidentally calling an random number generator a second time.
