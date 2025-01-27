@@ -144,7 +144,7 @@ subprojects {
     }
 
     publishMods {
-        type = STABLE
+        type = BETA
 
         displayName = "${project.mod_name} v${project.mod_version} (${project.minecraft_version} ${project.name.capitalize()})"
         version = "${project.version}+${project.minecraft_version}-${project.name}"

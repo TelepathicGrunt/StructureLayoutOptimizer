@@ -1,12 +1,15 @@
 package telepathicgrunt.structure_layout_optimizer.utils;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -23,6 +26,8 @@ import java.util.function.Predicate;
 public class PalettedStructureBlockInfoList implements List<StructureTemplate.StructureBlockInfo> {
     private static final long[] EMPTY_DATA = new long[0];
     private static final CompoundTag[] NULL_TAGS = new CompoundTag[]{null};
+    private static WeakReference<List<StructureTemplate.StructureBlockInfo>> cachedStructureBlockInfoList = new WeakReference<>(null);
+    private static final String UNSUPPORTED_OPERATION_ERROR_MESSAGE = "Structure Layout Optimizer: No mod should be modifying a StructureTemplate's Palette itself. Please reach out to Structure Layout Optimizer dev for this crash to investigate this mod compat issue.";
 
     protected final long[] data;
     protected final BlockState[] states;
@@ -124,6 +129,20 @@ public class PalettedStructureBlockInfoList implements List<StructureTemplate.St
         return -1;
     }
 
+    private List<StructureTemplate.StructureBlockInfo> convertBackToStructureBlockInfoListAndCache() {
+        synchronized(data) {
+            List<StructureTemplate.StructureBlockInfo> structureBlockInfos = cachedStructureBlockInfoList.get();
+            if (structureBlockInfos != null) {
+                return structureBlockInfos;
+            }
+
+            // DOUBLE CHECK THAT THIS LIST IS IN SAME ORDERING AS VANILLA
+            structureBlockInfos = new ObjectArrayList<>(new PalettedStructureBlockInfoListIterator(this));
+            cachedStructureBlockInfoList = new WeakReference<>(structureBlockInfos);
+            return structureBlockInfos;
+        }
+    }
+
     @Override
     public int size() {
         return this.size;
@@ -137,112 +156,113 @@ public class PalettedStructureBlockInfoList implements List<StructureTemplate.St
     @NotNull
     @Override
     public Iterator<StructureTemplate.StructureBlockInfo> iterator() {
-        return new PalettedStructureBlockInfoListIterator(this);
-    }
-
-    @Override
-    public boolean contains(Object o) {
-        throw new UnsupportedOperationException();
-    }
-
-    @NotNull
-    @Override
-    public Object @NotNull [] toArray() {
-        throw new UnsupportedOperationException();
-    }
-
-    @NotNull
-    @Override
-    public <T> T @NotNull [] toArray(@NotNull T @NotNull [] a) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean add(StructureTemplate.StructureBlockInfo info) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean remove(Object o) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean containsAll(@NotNull Collection<?> c) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean addAll(@NotNull Collection<? extends StructureTemplate.StructureBlockInfo> c) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean addAll(int index, @NotNull Collection<? extends StructureTemplate.StructureBlockInfo> c) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean removeAll(@NotNull Collection<?> c) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean retainAll(@NotNull Collection<?> c) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void clear() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public StructureTemplate.StructureBlockInfo get(int index) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public StructureTemplate.StructureBlockInfo set(int index, StructureTemplate.StructureBlockInfo element) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void add(int index, StructureTemplate.StructureBlockInfo element) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public StructureTemplate.StructureBlockInfo remove(int index) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public int indexOf(Object o) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public int lastIndexOf(Object o) {
-        throw new UnsupportedOperationException();
+        return convertBackToStructureBlockInfoListAndCache().iterator();
     }
 
     @NotNull
     @Override
     public ListIterator<StructureTemplate.StructureBlockInfo> listIterator() {
-        throw new UnsupportedOperationException();
+        return convertBackToStructureBlockInfoListAndCache().listIterator();
     }
 
     @NotNull
     @Override
     public ListIterator<StructureTemplate.StructureBlockInfo> listIterator(int index) {
-        throw new UnsupportedOperationException();
+        return convertBackToStructureBlockInfoListAndCache().listIterator(index);
+    }
+
+
+    @Override
+    public boolean contains(Object o) {
+        return convertBackToStructureBlockInfoListAndCache().contains(o);
+    }
+
+    @Override
+    public boolean containsAll(@NotNull Collection<?> c) {
+        return new HashSet<>(convertBackToStructureBlockInfoListAndCache()).containsAll(c);
+    }
+
+    @NotNull
+    @Override
+    public Object @NotNull [] toArray() {
+        return convertBackToStructureBlockInfoListAndCache().toArray();
+    }
+
+    @NotNull
+    @Override
+    public <T> T @NotNull [] toArray(@NotNull T @NotNull [] a) {
+        return convertBackToStructureBlockInfoListAndCache().toArray(a);
+    }
+
+    @Override
+    public StructureTemplate.StructureBlockInfo get(int index) {
+        return convertBackToStructureBlockInfoListAndCache().get(index);
+    }
+
+    @Override
+    public int indexOf(Object o) {
+        return convertBackToStructureBlockInfoListAndCache().indexOf(o);
+    }
+
+    @Override
+    public int lastIndexOf(Object o) {
+        return convertBackToStructureBlockInfoListAndCache().lastIndexOf(o);
     }
 
     @NotNull
     @Override
     public List<StructureTemplate.StructureBlockInfo> subList(int fromIndex, int toIndex) {
-        throw new UnsupportedOperationException();
+        return convertBackToStructureBlockInfoListAndCache().subList(fromIndex, toIndex);
+    }
+
+    @Override
+    public StructureTemplate.StructureBlockInfo set(int index, StructureTemplate.StructureBlockInfo element) {
+        throw new UnsupportedOperationException(UNSUPPORTED_OPERATION_ERROR_MESSAGE);
+    }
+
+    @Override
+    public void add(int index, StructureTemplate.StructureBlockInfo element) {
+        throw new UnsupportedOperationException(UNSUPPORTED_OPERATION_ERROR_MESSAGE);
+    }
+
+    @Override
+    public boolean add(StructureTemplate.StructureBlockInfo info) {
+        throw new UnsupportedOperationException(UNSUPPORTED_OPERATION_ERROR_MESSAGE);
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        throw new UnsupportedOperationException(UNSUPPORTED_OPERATION_ERROR_MESSAGE);
+    }
+
+    @Override
+    public StructureTemplate.StructureBlockInfo remove(int index) {
+        throw new UnsupportedOperationException(UNSUPPORTED_OPERATION_ERROR_MESSAGE);
+    }
+
+    @Override
+    public boolean addAll(@NotNull Collection<? extends StructureTemplate.StructureBlockInfo> c) {
+        throw new UnsupportedOperationException(UNSUPPORTED_OPERATION_ERROR_MESSAGE);
+    }
+
+    @Override
+    public boolean addAll(int index, @NotNull Collection<? extends StructureTemplate.StructureBlockInfo> c) {
+        throw new UnsupportedOperationException(UNSUPPORTED_OPERATION_ERROR_MESSAGE);
+    }
+
+    @Override
+    public boolean removeAll(@NotNull Collection<?> c) {
+        throw new UnsupportedOperationException(UNSUPPORTED_OPERATION_ERROR_MESSAGE);
+    }
+
+    @Override
+    public boolean retainAll(@NotNull Collection<?> c) {
+        throw new UnsupportedOperationException(UNSUPPORTED_OPERATION_ERROR_MESSAGE);
+    }
+
+    @Override
+    public void clear() {
+        throw new UnsupportedOperationException(UNSUPPORTED_OPERATION_ERROR_MESSAGE);
     }
 
     private static class Entry {
