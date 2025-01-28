@@ -26,7 +26,6 @@ import java.util.function.Predicate;
 public class PalettedStructureBlockInfoList implements List<StructureTemplate.StructureBlockInfo> {
     private static final long[] EMPTY_DATA = new long[0];
     private static final CompoundTag[] NULL_TAGS = new CompoundTag[]{null};
-    private static WeakReference<List<StructureTemplate.StructureBlockInfo>> cachedStructureBlockInfoList = new WeakReference<>(null);
     private static final String UNSUPPORTED_OPERATION_ERROR_MESSAGE = "Structure Layout Optimizer: No mod should be modifying a StructureTemplate's Palette itself. Please reach out to Structure Layout Optimizer dev for this crash to investigate this mod compat issue.";
 
     protected final long[] data;
@@ -36,6 +35,7 @@ public class PalettedStructureBlockInfoList implements List<StructureTemplate.St
     protected final int stateBits, nbtBits;
     protected final int bitsPerEntry;
     protected final int size;
+    private WeakReference<List<StructureTemplate.StructureBlockInfo>> cachedStructureBlockInfoList = new WeakReference<>(null);
 
     public PalettedStructureBlockInfoList(List<StructureTemplate.StructureBlockInfo> infos) {
         this(infos, null);
@@ -136,7 +136,6 @@ public class PalettedStructureBlockInfoList implements List<StructureTemplate.St
                 return structureBlockInfos;
             }
 
-            // DOUBLE CHECK THAT THIS LIST IS IN SAME ORDERING AS VANILLA
             structureBlockInfos = new ObjectArrayList<>(new PalettedStructureBlockInfoListIterator(this));
             cachedStructureBlockInfoList = new WeakReference<>(structureBlockInfos);
             return structureBlockInfos;

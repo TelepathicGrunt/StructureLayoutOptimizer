@@ -26,7 +26,7 @@ Optimizes general Jigsaw structure generation as best I can:
 
   - Furthermore, you can turn on the `deduplicateShuffledTemplatePoolElementList` config option to get even more performance out of high weight elements in Template Pools. The issue is this config comes at a cost of changing the layout of the structure. The layout is still valid and good. It would just be different than if the config option is kept off. Basically it breaks seed parity for structure layouts specifically to get that extra performance boost.
 
-- (1.21.4 BETA): Swap StructureTemplate$Palette's list of StructureBlockInfo objects to be a palette of StructureBlockInfo objects instead for reduced memory usage when not generating that cached StructureTemplate.
+- (1.21.4 with v1.1.0+): Swap StructureTemplate$Palette's list of StructureBlockInfo objects to be a palette of StructureBlockInfo objects instead for reduced memory usage when not generating that cached StructureTemplate.
 
   - This optimization is a modified form from contaria's Glacier mod for 1.16.1. Special thanks to them for allowing me to use their code as a basis for this optimization!
 
