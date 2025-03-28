@@ -48,10 +48,12 @@ publishMods {
     String changeLogText = changeLog.exists() ? changeLog.text : ""
 
     def uploadDependenciesCf = [
-            'resourceful-config': true
+            'resourceful-config': true,
+            'fabric-api': true
     ]
     def uploadDependenciesMr = [
-            'resourceful-config': true
+            'resourceful-config': true,
+            'fabric-api': true
     ]
 
     if (project.hasProperty('curseforge_id')) {

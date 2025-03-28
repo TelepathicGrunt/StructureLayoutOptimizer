@@ -50,7 +50,7 @@ public final class GeneralUtils {
         for (StructureTemplate.JigsawBlockInfo structureBlockInfo : list) {
             int key = 0;
             if (structureBlockInfo.info().nbt() != null) {
-                key = getIntMicroOptimised(structureBlockInfo.info().nbt(), "selection_priority");
+                key = structureBlockInfo.info().nbt().getIntOr("selection_priority", 0);
             }
 
             buckets.computeIfAbsent(key, k -> new ArrayList<>()).add(structureBlockInfo);
@@ -76,11 +76,6 @@ public final class GeneralUtils {
                 copyAll(buckets.get(keys.getInt(i)), list);
             }
         }
-    }
-
-    // From Thailkil by reducing grabbing of the entry by half
-    public static int getIntMicroOptimised(CompoundTag tag, String key) {
-        return tag.get(key) instanceof NumericTag numericTag ? numericTag.intValue() : 0;
     }
 
     public static String getStringMicroOptimised(CompoundTag tag, String key) {

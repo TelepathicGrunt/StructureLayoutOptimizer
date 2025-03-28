@@ -1,8 +1,8 @@
 plugins {
     id 'idea'
     id 'maven-publish'
-    id 'me.modmuss50.mod-publish-plugin' version '0.7.4' apply false
-    id 'net.neoforged.moddev' version '2.0.43-beta' apply false
+    id 'me.modmuss50.mod-publish-plugin' version '0.8.4' apply false
+    id 'net.neoforged.moddev' version '2.0.80' apply false
 }
 
 def javaVersion = 21
@@ -24,16 +24,18 @@ subprojects {
     project.group = rootProject.group
     project.version = rootProject.version
 
+    base {
+        archivesName.set(mod_id)
+    }
+
+    version = "${rootProject.mod_version}+${rootProject.minecraft_version}-${name}"
+
     repositories {
         maven { url = 'https://maven.teamresourceful.com/repository/maven-releases' }
     }
 
     dependencies {
         compileOnly "org.jetbrains:annotations:${jetbrains_annotations_version}"
-    }
-
-    base {
-        archivesName.set("${mod_id}-${project.name}")
     }
 
     processResources {
@@ -86,7 +88,7 @@ subprojects {
         inputs.file(licenseFile)
 
         from(licenseFile) {
-            rename { "LICENSE_${mod_name}.txt" }
+            rename { "LICENSE.txt" }
         }
     }
 
@@ -95,7 +97,7 @@ subprojects {
         inputs.file(licenseFile)
 
         from(licenseFile) {
-            rename { "LICENSE_${mod_name}.txt" }
+            rename { "LICENSE.txt" }
         }
     }
 
@@ -104,13 +106,25 @@ subprojects {
     }
 
     tasks.publishMods.mustRunAfter tasks.publish
-    tasks.buildAndRelease.dependsOn(tasks.publishMods)
+    tasks.buildAndRelease.dependsOn(tasks.publish).dependsOn(tasks.publishMods)
 
     publishing {
+        repositories {
+            if (ENV.MAVEN_USER) {
+                maven {
+                    url = uri("https://nexus.resourcefulbees.com/repository/telepathicgrunt/")
+                    credentials {
+                        username ENV.MAVEN_USER
+                        password ENV.MAVEN_PASS
+                    }
+                }
+            }
+        }
+
         publications {
             "mavenJava${project.name}"(MavenPublication) {
-                artifactId "${project.mod_id}-${project.name}"
                 from components.java
+                artifactId "${project.mod_id}"
 
                 pom {
                     name = project.mod_name
@@ -147,7 +161,7 @@ subprojects {
         type = STABLE
 
         displayName = "${project.mod_name} v${project.mod_version} (${project.minecraft_version} ${project.name.capitalize()})"
-        version = "${project.version}+${project.minecraft_version}-${project.name}"
+        version = project.version
 
         def changeLogFile = project.file("CHANGELOG.md")
         changelog = changeLogFile.exists() ? changeLogFile.text : ""
@@ -163,21 +177,5 @@ idea {
     module {
         downloadSources = true
         downloadJavadoc = true
-    }
-}
-
-////////////////////////////////////////////RELEASING/////////////////////////////////////////////
-
-publishing {
-    repositories {
-        if (ENV.MAVEN_USER) {
-            maven {
-                url = uri("https://nexus.resourcefulbees.com/repository/telepathicgrunt/")
-                credentials {
-                    username ENV.MAVEN_USER
-                    password ENV.MAVEN_PASS
-                }
-            }
-        }
     }
 }
