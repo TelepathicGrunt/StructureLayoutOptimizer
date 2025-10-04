@@ -1,2 +1,2 @@
-## v1.1.1
-Ported to 1.21.6
+## v1.1.2
+Fixed crash in 1.21.9
