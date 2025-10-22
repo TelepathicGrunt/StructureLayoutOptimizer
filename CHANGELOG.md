@@ -1,1 +1,2 @@
-Fixed bug where structure layout can be different than in vanilla. Was accidentally calling an random number generator a second time.
+## v1.1.3
+Fixed classload crash when using Compact Machine's room preview
