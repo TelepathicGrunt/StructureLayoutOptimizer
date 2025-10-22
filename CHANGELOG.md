@@ -1,2 +1,2 @@
-## v1.1.1
-Ported to 1.21.6
+## v1.1.3
+Fixed classload crash when using Compact Machine's room preview
