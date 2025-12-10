@@ -21,13 +21,12 @@
   },
   "depends": {
     "fabricloader": ">=${fabric_loader_version}",
-    "minecraft": "1.21.x",
+    "minecraft": ">=1.21.11",
     "java": ">=${java_version}",
     "fabric-api": "*",
     "resourcefulconfig": "*"
   },
   "environment": "*",
-  "accessWidener": "${mod_id}.accesswidener",
   "mixins": [
     "${mod_id}.mixins.json"
   ]

@@ -18,7 +18,7 @@ import telepathicgrunt.structure_layout_optimizer.utils.TrojanVoxelShape;
 public class JigsawPlacementMixin {
 
     // need the intermediary name of the lambda method because fabric remaps those and uses intermediary even in dev
-    @WrapOperation(method = {"lambda$addPieces$2", "Lnet/minecraft/class_3778;method_39824(Lnet/minecraft/class_3790;IILnet/minecraft/class_5434$class_11600;ILnet/minecraft/class_5539;Lnet/minecraft/class_9778;ILnet/minecraft/class_3341;Lnet/minecraft/class_3195$class_7149;ZLnet/minecraft/class_2794;Lnet/minecraft/class_3485;Lnet/minecraft/class_2919;Lnet/minecraft/class_2378;Lnet/minecraft/class_8891;Lnet/minecraft/class_9822;Lnet/minecraft/class_6626;)V"},
+    @WrapOperation(method = {"lambda$addPieces$2", "method_39824(Lnet/minecraft/class_3790;IILnet/minecraft/class_5434$class_11600;ILnet/minecraft/class_5539;Lnet/minecraft/class_9778;ILnet/minecraft/class_3341;Lnet/minecraft/class_3195$class_7149;ZLnet/minecraft/class_2794;Lnet/minecraft/class_3485;Lnet/minecraft/class_2919;Lnet/minecraft/class_2378;Lnet/minecraft/class_8891;Lnet/minecraft/class_9822;Lnet/minecraft/class_6626;)V"},
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/shapes/Shapes;join(Lnet/minecraft/world/phys/shapes/VoxelShape;Lnet/minecraft/world/phys/shapes/VoxelShape;Lnet/minecraft/world/phys/shapes/BooleanOp;)Lnet/minecraft/world/phys/shapes/VoxelShape;"),
             require = 1)
     private static VoxelShape structureLayoutOptimizer$replaceVoxelShape1(VoxelShape shape1, VoxelShape shape2, BooleanOp function, Operation<VoxelShape> original, @Local(ordinal = 0) AABB aabb, @Local(ordinal = 0, argsOnly = true) BoundingBox boundingbox) {
