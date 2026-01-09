@@ -1,5 +1,6 @@
 package telepathicgrunt.structure_layout_optimizer.mixins;
 
+import com.google.common.collect.Lists;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -22,7 +23,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.include.com.google.common.collect.Lists;
 import telepathicgrunt.structure_layout_optimizer.SloConfig;
 import telepathicgrunt.structure_layout_optimizer.utils.BoxOctree;
 import telepathicgrunt.structure_layout_optimizer.utils.GeneralUtils;
