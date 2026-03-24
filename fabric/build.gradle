@@ -1,47 +1,32 @@
 plugins {
-    id 'fabric-loom'
+    id 'net.fabricmc.fabric-loom'
 }
 
 repositories {
     maven { url = 'https://maven.terraformersmc.com/releases' }
-    exclusiveContent {
-        forRepository {
-            maven {
-                name = "ParchmentMC"
-                url = "https://maven.parchmentmc.org"
-            }
-        }
-        filter {
-            includeGroupAndSubgroups("org.parchmentmc")
-        }
-    }
 }
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings(loom.layered {
-        it.officialMojangMappings()
-        it.parchment("org.parchmentmc.data:parchment-${project.parchment_minecraft_version}:${project.parchment_mappings_version}@zip")
-    })
     compileOnly(project(":common")) {
         transitive = false
     }
 
-    modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+    implementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
-    modImplementation "com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-${project.resourceful_config_minecraft_version}:${project.resourceful_config_version}"
+    implementation "com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-${project.resourceful_config_minecraft_version}:${project.resourceful_config_version}"
 
-    modCompileOnly("com.terraformersmc:modmenu:${project.mod_menu_version}") {
+    compileOnly("com.terraformersmc:modmenu:${project.mod_menu_version}") {
         transitive = false
     }
-    modLocalRuntime("com.terraformersmc:modmenu:${project.mod_menu_version}") {
+    localRuntime("com.terraformersmc:modmenu:${project.mod_menu_version}") {
         transitive = false
     }
 }
 
 publishMods {
-    file = tasks.remapJar.archiveFile
+    file = tasks.jar.archiveFile
     modLoaders.add("fabric")
 
     File changeLog = rootProject.file("CHANGELOG.md")
