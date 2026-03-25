@@ -21,7 +21,6 @@ import java.util.Map;
 public class StructureTemplateOptimizer {
 
     private static final Map<StructureProcessor, Boolean> FINALIZE_PROCESSING_PROCESSORS = Object2BooleanMaps.synchronize(new Object2BooleanOpenHashMap<>());
-    private static final String FINALIZE_PROCESSING_METHOD_NAME = PlatformService.INSTANCE.getFinalizeProcessingMethodName();
 
     public static @NotNull List<StructureTemplate.StructureBlockInfo> getStructureBlockInfosInBounds(StructureTemplate.Palette palette, BlockPos offset, StructurePlaceSettings structurePlaceSettings) {
         BoundingBox boundingBox = structurePlaceSettings.getBoundingBox();
@@ -66,7 +65,7 @@ public class StructureTemplateOptimizer {
     private static @NotNull Boolean isFinalizeProcessor(StructureProcessor structureProcessor) {
         try {
             var method = structureProcessor.getClass().getMethod(
-                    FINALIZE_PROCESSING_METHOD_NAME,
+                    "finalizeProcessing",
                     ServerLevelAccessor.class,
                     BlockPos.class,
                     BlockPos.class,
