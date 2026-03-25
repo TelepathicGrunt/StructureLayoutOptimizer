@@ -57,7 +57,7 @@ public class StructureTemplateOptimizer {
         // DO NOT REMOVE. This is required because the Template will return false for an entirely empty list and then remove the structure piece
         // out of the structure start, preventing it from placing blocks into any other side chunks that the piece was supposed to place blocks in.
         if (listOfInBoundsRelativePositions.isEmpty() && !originalPositions.isEmpty()) {
-            listOfInBoundsRelativePositions.add(originalPositions.get(0));
+            listOfInBoundsRelativePositions.add(originalPositions.getFirst());
         }
 
         return listOfInBoundsRelativePositions;

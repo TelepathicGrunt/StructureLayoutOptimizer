@@ -48,13 +48,11 @@ public class JigsawPlacementPlacerMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/levelgen/structure/pools/StructurePoolElement;getShuffledJigsawBlocks(Lnet/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplateManager;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/Rotation;Lnet/minecraft/util/RandomSource;)Ljava/util/List;", ordinal = 1))
     private List<StructureTemplate.StructureBlockInfo> structureLayoutOptimizer$skipBlockedJigsaws(
             List<StructureTemplate.StructureBlockInfo> original,
-            @Local(ordinal = 0, argsOnly = true) boolean useExpansionHack,
-            @Local(ordinal = 2) MutableObject<VoxelShape> voxelShapeMutableObject,
-            @Local(ordinal = 1) StructurePoolElement structurePoolElement,
-            @Local(ordinal = 0) StructureTemplate.StructureBlockInfo parentJigsawBlockInfo,
-            @Local(ordinal = 2) BlockPos parentTargetPosition)
+            @Local(name = "childrenFree") MutableObject<VoxelShape> voxelShapeMutableObject,
+            @Local(name = "targetElement") StructurePoolElement structurePoolElement,
+            @Local(name = "targetJigsawPos") BlockPos parentTargetPosition)
     {
-        if (voxelShapeMutableObject.getValue() instanceof TrojanVoxelShape trojanVoxelShape) {
+        if (voxelShapeMutableObject.get() instanceof TrojanVoxelShape trojanVoxelShape) {
             // If rigid and target position is already an invalid spot, do not run rest of logic.
             StructureTemplatePool.Projection candidatePlacementBehavior = structurePoolElement.getProjection();
             boolean isCandidateRigid = candidatePlacementBehavior == StructureTemplatePool.Projection.RIGID;
@@ -69,7 +67,7 @@ public class JigsawPlacementPlacerMixin {
 
     @WrapOperation(method = "tryPlacingChildren(Lnet/minecraft/world/level/levelgen/structure/PoolElementStructurePiece;Lorg/apache/commons/lang3/mutable/MutableObject;IZLnet/minecraft/world/level/LevelHeightAccessor;Lnet/minecraft/world/level/levelgen/RandomState;Lnet/minecraft/world/level/levelgen/structure/pools/alias/PoolAliasLookup;Lnet/minecraft/world/level/levelgen/structure/templatesystem/LiquidSettings;)V",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/phys/shapes/Shapes;joinIsNotEmpty(Lnet/minecraft/world/phys/shapes/VoxelShape;Lnet/minecraft/world/phys/shapes/VoxelShape;Lnet/minecraft/world/phys/shapes/BooleanOp;)Z"))
-    private boolean structureLayoutOptimizer$replaceVoxelShape2(VoxelShape parentBounds, VoxelShape pieceShape, BooleanOp booleanOp, Operation<Boolean> original, @Local(ordinal = 3) BoundingBox pieceBounds) {
+    private boolean structureLayoutOptimizer$replaceVoxelShape2(VoxelShape parentBounds, VoxelShape pieceShape, BooleanOp booleanOp, Operation<Boolean> original, @Local(name = "targetBB") BoundingBox pieceBounds) {
         if (parentBounds instanceof TrojanVoxelShape trojanVoxelShape) {
             AABB pieceAABB = AABB.of(pieceBounds).deflate(0.25D);
 
@@ -82,15 +80,15 @@ public class JigsawPlacementPlacerMixin {
 
     @Redirect(method = "tryPlacingChildren(Lnet/minecraft/world/level/levelgen/structure/PoolElementStructurePiece;Lorg/apache/commons/lang3/mutable/MutableObject;IZLnet/minecraft/world/level/LevelHeightAccessor;Lnet/minecraft/world/level/levelgen/RandomState;Lnet/minecraft/world/level/levelgen/structure/pools/alias/PoolAliasLookup;Lnet/minecraft/world/level/levelgen/structure/templatesystem/LiquidSettings;)V",
             at = @At(value = "INVOKE", target = "Lorg/apache/commons/lang3/mutable/MutableObject;setValue(Ljava/lang/Object;)V", ordinal = 0))
-    private void structureLayoutOptimizer$replaceVoxelShape3(MutableObject<VoxelShape> instance, Object value, @Local(ordinal = 0) BoundingBox pieceBounds) {
+    private void structureLayoutOptimizer$replaceVoxelShape3(MutableObject<VoxelShape> instance, Object value, @Local(name = "sourceBB") BoundingBox pieceBounds) {
         TrojanVoxelShape trojanVoxelShape = new TrojanVoxelShape(new BoxOctree(AABB.of(pieceBounds)));
         instance.setValue(trojanVoxelShape);
     }
 
     @Redirect(method = "tryPlacingChildren(Lnet/minecraft/world/level/levelgen/structure/PoolElementStructurePiece;Lorg/apache/commons/lang3/mutable/MutableObject;IZLnet/minecraft/world/level/LevelHeightAccessor;Lnet/minecraft/world/level/levelgen/RandomState;Lnet/minecraft/world/level/levelgen/structure/pools/alias/PoolAliasLookup;Lnet/minecraft/world/level/levelgen/structure/templatesystem/LiquidSettings;)V",
             at = @At(value = "INVOKE", target = "Lorg/apache/commons/lang3/mutable/MutableObject;setValue(Ljava/lang/Object;)V", ordinal = 1))
-    private void structureLayoutOptimizer$replaceVoxelShape4(MutableObject<VoxelShape> instance, Object value, @Local(ordinal = 3) BoundingBox pieceBounds) {
-        if (instance.getValue() instanceof TrojanVoxelShape trojanVoxelShape) {
+    private void structureLayoutOptimizer$replaceVoxelShape4(MutableObject<VoxelShape> instance, Object value, @Local(name = "targetBB") BoundingBox pieceBounds) {
+        if (instance.get() instanceof TrojanVoxelShape trojanVoxelShape) {
             trojanVoxelShape.boxOctree.addBox(AABB.of(pieceBounds));
         }
     }
@@ -149,8 +147,8 @@ public class JigsawPlacementPlacerMixin {
             method = "tryPlacingChildren(Lnet/minecraft/world/level/levelgen/structure/PoolElementStructurePiece;Lorg/apache/commons/lang3/mutable/MutableObject;IZLnet/minecraft/world/level/LevelHeightAccessor;Lnet/minecraft/world/level/levelgen/RandomState;Lnet/minecraft/world/level/levelgen/structure/pools/alias/PoolAliasLookup;Lnet/minecraft/world/level/levelgen/structure/templatesystem/LiquidSettings;)V",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/Rotation;getShuffled(Lnet/minecraft/util/RandomSource;)Ljava/util/List;", ordinal = 0))
     private List<Rotation> structureLayoutOptimizer$skipDuplicateTemplatePoolElementLists2(List<Rotation> original,
-                                                                                           @Local(ordinal = 0) List<StructurePoolElement> list,
-                                                                                           @Local(ordinal = 1) StructurePoolElement structurepoolelement1)
+                                                                                           @Local(name = "targetPieces") List<StructurePoolElement> list,
+                                                                                           @Local(name = "targetElement") StructurePoolElement structurepoolelement1)
     {
         if (!SloConfig.deduplicateShuffledTemplatePoolElementList && list instanceof TrojanArrayList<StructurePoolElement> trojanArrayList) {
             // Do not run this piece's logic since we already checked its 4 rotations in the past.

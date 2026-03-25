@@ -78,7 +78,7 @@ public final class GeneralUtils {
     }
 
     public static String getStringMicroOptimised(CompoundTag tag, String key) {
-        return tag.get(key) instanceof StringTag stringTag ? stringTag.value() : "";
+        return tag.get(key) instanceof StringTag(String value) ? value : "";
     }
 
     // From XFactHD at https://github.com/XFactHD/FramedBlocks/blob/d89311e31d55630b5a9cecd3b8f75abcf9693ce0/src/main/java/xfacthd/framedblocks/api/util/Utils.java#L396-L409

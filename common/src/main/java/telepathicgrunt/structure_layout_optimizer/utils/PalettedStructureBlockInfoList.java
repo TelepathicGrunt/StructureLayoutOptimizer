@@ -109,7 +109,7 @@ public class PalettedStructureBlockInfoList implements List<StructureTemplate.St
             this.data = EMPTY_DATA;
         }
         this.states = states.toArray(new BlockState[0]);
-        this.nbts = tags.size() == 1 && tags.get(0) == null ? NULL_TAGS : tags.toArray(new CompoundTag[0]);
+        this.nbts = tags.size() == 1 && tags.getFirst() == null ? NULL_TAGS : tags.toArray(new CompoundTag[0]);
     }
 
     private static int bits(int i) {
@@ -264,20 +264,10 @@ public class PalettedStructureBlockInfoList implements List<StructureTemplate.St
         throw new UnsupportedOperationException(UNSUPPORTED_OPERATION_ERROR_MESSAGE);
     }
 
-    private static class Entry {
-        private final int x, y, z;
-        private final int state, nbt;
-
-        private Entry(int x, int y, int z, int state, int nbt) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.state = state;
-            this.nbt = nbt;
-        }
+    private record Entry(int x, int y, int z, int state, int nbt) {
 
         private long compress(int xBits, int yBits, int zBits, int stateBits) {
-            return this.x + ((this.y + ((this.z + ((this.state + ((long) this.nbt << stateBits)) << zBits)) << yBits)) << xBits);
+                return this.x + ((this.y + ((this.z + ((this.state + ((long) this.nbt << stateBits)) << zBits)) << yBits)) << xBits);
+            }
         }
-    }
 }
