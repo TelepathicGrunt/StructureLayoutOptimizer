@@ -32,4 +32,19 @@ Optimizes general Jigsaw structure generation as best I can:
 
   - Essentially in vanilla, every time a structure nbt file is loaded, it is converted to a StructureTemplate object and cached. Buried in that object is a list of ALL the positions from that nbt file paired with the blocks and nbt tag at each position. This is the biggest memory hog for StructureTemplate objects. What this mod will do is swap this list with a special palette data structure object under the hood that pretends to be a list. The memory size of the palette is significantly smaller than the list! Then when queried for worldgen, it will construct the list again as a WeakReference so worldgen remains fast and works properly. And when worldgen is done, this list will get garbage collected to free up memory again, allowing each StructureTemplate to only use the full amount of memory they need when doing worldgen but stay cached in a smaller form long term. The downside is this list cannot and should not be modified with add, remove, clear calls and will throw and exception if done. Luckily, I do not think any mod is modifying this list itself on StructureTemplate directly but if they do, please let me know.
 
+
+-------
+
+## YourKit
+
+![https://www.yourkit.com/images/yklogo.png](https://www.yourkit.com/images/yklogo.png)
+
+YourKit supports open source projects with innovative and intelligent tools
+for monitoring and profiling Java and .NET applications.
+YourKit is the creator of <a href="https://www.yourkit.com/java/profiler/">YourKit Java Profiler</a>,
+<a href="https://www.yourkit.com/dotnet-profiler/">YourKit .NET Profiler</a>,
+and <a href="https://www.yourkit.com/youmonitor/">YourKit YouMonitor</a>.
+
+-------
+
   - ModernFix does have a mixin that will make the StructureTemplate objects themselves be a SoftReference and be removed completely from memory when the game gets full on memory. This is a valid solution and aims to stop the memory leak of loading structure nbts into a cache that never clears in long term gameplay. The downside of this is that the piece has to be loaded directly from the file again if it was cleared from memory. This mixin will work just fine alongside my mod's optimization. What will probably happen is my mod make StructureTemplate smaller in memory which allows ModernFix to keep more StructureTemplates in memory without them getting fully removed from memory. Which should allow more cache hits over long term. In theory.
