@@ -1,2 +1,2 @@
-## v1.1.4
-Fixed rare mixin crash due to using wrong list import
+## v1.1.5
+Fixed crash at world load
