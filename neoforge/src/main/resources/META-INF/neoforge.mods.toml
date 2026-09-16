@@ -9,8 +9,8 @@ modId="${mod_id}"
 version="${version}"
 displayName="${mod_display_name}"
 displayURL="${homepage_url}"
-logoFile="structure_layout_optimizer.png"
-logoBlur=false
+bannerFile="structure_layout_optimizer.png"
+iconFile="structure_layout_optimizer.png"
 authors="TelepathicGrunt"
 description='''${mod_description}'''
 

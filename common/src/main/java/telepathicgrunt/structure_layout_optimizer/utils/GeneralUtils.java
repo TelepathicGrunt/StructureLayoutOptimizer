@@ -22,37 +22,13 @@ public final class GeneralUtils {
         return ServiceLoader.load(service, service.getClassLoader()).findFirst().orElseThrow(() -> new IllegalStateException("No platform implementation found for " + service.getName()));
     }
 
-    // More optimized with checking if the jigsaw blocks can connect
-    public static boolean canJigsawsAttach(StructureTemplate.JigsawBlockInfo jigsaw1, StructureTemplate.JigsawBlockInfo jigsaw2) {
-        FrontAndTop prop1 = jigsaw1.info().state().getValue(JigsawBlock.ORIENTATION);
-        FrontAndTop prop2 = jigsaw2.info().state().getValue(JigsawBlock.ORIENTATION);
-
-        return prop1.front() == prop2.front().getOpposite() &&
-                (prop1.top() == prop2.top() || isRollableJoint(jigsaw1, prop1)) &&
-                getStringMicroOptimised(jigsaw1.info().nbt(), "target").equals(getStringMicroOptimised(jigsaw2.info().nbt(), "name"));
-    }
-
-    private static boolean isRollableJoint(StructureTemplate.JigsawBlockInfo jigsaw1, FrontAndTop prop1) {
-        String joint = getStringMicroOptimised(jigsaw1.info().nbt(), "joint");
-        if(!joint.equals("rollable") && !joint.equals("aligned")) {
-            return !prop1.front().getAxis().isHorizontal();
-        }
-        else {
-            return joint.equals("rollable");
-        }
-    }
-
     public static void shuffleAndPrioritize(List<StructureTemplate.JigsawBlockInfo> list, RandomSource random) {
         Int2ObjectArrayMap<List<StructureTemplate.JigsawBlockInfo>> buckets = new Int2ObjectArrayMap<>();
 
         // Add entries to the bucket
         for (StructureTemplate.JigsawBlockInfo structureBlockInfo : list) {
-            int key = 0;
-            if (structureBlockInfo.info().nbt() != null) {
-                key = structureBlockInfo.info().nbt().getIntOr("selection_priority", 0);
-            }
-
-            buckets.computeIfAbsent(key, k -> new ArrayList<>()).add(structureBlockInfo);
+            int key = structureBlockInfo.selectionPriority();
+            buckets.computeIfAbsent(key, _ -> new ArrayList<>()).add(structureBlockInfo);
         }
 
         // Shuffle the entries in the bucket
