@@ -1,2 +1,2 @@
-## v1.1.4
-Updated to 26.3
+## v1.1.5
+Fixed memory leak with finalize processor checking logic
