@@ -53,10 +53,6 @@ public final class GeneralUtils {
         }
     }
 
-    public static String getStringMicroOptimised(CompoundTag tag, String key) {
-        return tag.get(key) instanceof StringTag(String value) ? value : "";
-    }
-
     // From XFactHD at https://github.com/XFactHD/FramedBlocks/blob/d89311e31d55630b5a9cecd3b8f75abcf9693ce0/src/main/java/xfacthd/framedblocks/api/util/Utils.java#L396-L409
     public static <T> void copyAll(List<T> src, List<T> dest) {
         // Do not listen to IDE. This is faster than addAll
