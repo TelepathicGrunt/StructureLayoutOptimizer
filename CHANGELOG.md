@@ -1,2 +1,2 @@
-## v1.0.11
-Fixed classload crash when using Compact Machine's room preview
+## v1.0.12
+Fixed memory leak with finalize processor checking logic
