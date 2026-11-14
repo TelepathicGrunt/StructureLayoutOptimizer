@@ -10,7 +10,6 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import org.jetbrains.annotations.NotNull;
 import telepathicgrunt.structure_layout_optimizer.StructureLayoutOptimizerMod;
-import telepathicgrunt.structure_layout_optimizer.services.PlatformService;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
