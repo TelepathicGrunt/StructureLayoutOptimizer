@@ -1,7 +1,5 @@
 package telepathicgrunt.structure_layout_optimizer.utils;
 
-import it.unimi.dsi.fastutil.objects.Object2BooleanMaps;
-import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Mirror;
@@ -15,12 +13,15 @@ import telepathicgrunt.structure_layout_optimizer.StructureLayoutOptimizerMod;
 import telepathicgrunt.structure_layout_optimizer.services.PlatformService;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
 
 public class StructureTemplateOptimizer {
+    private static final ConcurrentReferenceHashMap<Class<?>, Boolean> FINALIZE_PROCESSING_PROCESSORS = new ConcurrentReferenceHashMap<>(
+            ConcurrentReferenceHashMap.ReferenceType.WEAK,
+            ConcurrentReferenceHashMap.ReferenceType.STRONG,
+            EnumSet.of(ConcurrentReferenceHashMap.Option.IDENTITY_COMPARISONS));
 
-    private static final Map<StructureProcessor, Boolean> FINALIZE_PROCESSING_PROCESSORS = Object2BooleanMaps.synchronize(new Object2BooleanOpenHashMap<>());
     private static final String FINALIZE_PROCESSING_METHOD_NAME = PlatformService.INSTANCE.getFinalizeProcessingMethodName();
 
     public static @NotNull List<StructureTemplate.StructureBlockInfo> getStructureBlockInfosInBounds(StructureTemplate.Palette palette, BlockPos offset, StructurePlaceSettings structurePlaceSettings) {
@@ -32,7 +33,7 @@ public class StructureTemplateOptimizer {
 
         // Capped processor needs full nbt block lists
         for (StructureProcessor processor : structurePlaceSettings.getProcessors()) {
-            if (FINALIZE_PROCESSING_PROCESSORS.computeIfAbsent(processor, StructureTemplateOptimizer::isFinalizeProcessor)) {
+            if (FINALIZE_PROCESSING_PROCESSORS.computeIfAbsent(processor.getClass(), aClass -> StructureTemplateOptimizer.isFinalizeProcessor(processor))) {
                 return palette.blocks();
             }
         }
